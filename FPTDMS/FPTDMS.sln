@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34902.65
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FPT Dormitory Management System", "FPT Dormitory Management System\FPT Dormitory Management System.csproj", "{BB344D80-F71F-4A3E-9471-25A248FC26EB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BB344D80-F71F-4A3E-9471-25A248FC26EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB344D80-F71F-4A3E-9471-25A248FC26EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB344D80-F71F-4A3E-9471-25A248FC26EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB344D80-F71F-4A3E-9471-25A248FC26EB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E1450F93-6213-4F9E-A1E8-87ACE9A964F5}
+	EndGlobalSection
+EndGlobal
