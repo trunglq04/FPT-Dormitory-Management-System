@@ -2,10 +2,12 @@
 using Microsoft.AspNetCore.Identity;
 using DMS_API.Models.Domain;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 namespace DMS_API.DataAccess
 {
-    public class ApplicationDbContext : IdentityDbContext<AppUser>
+    public class ApplicationDbContext : 
+        IdentityDbContext<AppUser>, IEntityTypeConfiguration<AppUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): base(options)
         {
@@ -21,6 +23,10 @@ namespace DMS_API.DataAccess
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.ApplyConfigurationsFromAssembly(
+                Assembly.GetExecutingAssembly()
+            );
+
             base.OnModelCreating(modelBuilder);
 
             // Seeding data

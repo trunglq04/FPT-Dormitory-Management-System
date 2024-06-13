@@ -11,6 +11,12 @@ namespace DMS_API.Infrastructure.Configurations
         {
             builder.Property(u => u.FullName)
                 .HasMaxLength(50);
+            builder.Property(u => u.Description)
+                .HasMaxLength(50);
+            builder.Property(u => u.Picture)
+                .HasMaxLength(40);
+            builder.Property(u => u.Gender)
+                .HasMaxLength(10);
         }
     }
 }
