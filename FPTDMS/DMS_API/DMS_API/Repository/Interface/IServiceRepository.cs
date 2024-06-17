@@ -1,4 +1,4 @@
-using DMS_API.Data.Models.Domain;
+using DMS_API.Models.Domain;
 
 namespace DMS_API.Repository.Interface
 {

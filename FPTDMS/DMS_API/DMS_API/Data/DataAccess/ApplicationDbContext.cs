@@ -2,13 +2,12 @@
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using DMS_API.Data.Models.Domain;
 using DMS_API.Data;
+using DMS_API.Models.Domain;
 
 namespace DMS_API.DataAccess
 {
-    public class ApplicationDbContext : 
-        IdentityDbContext<User>, IEntityTypeConfiguration<User>
+    public class ApplicationDbContext : IdentityDbContext<User>, IEntityTypeConfiguration<User>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): base(options)
         {

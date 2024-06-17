@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DMS_API.Data.Models.Domain;
+using DMS_API.Models.Domain;
 using Microsoft.EntityFrameworkCore;
 
 namespace DMS_API.Data
