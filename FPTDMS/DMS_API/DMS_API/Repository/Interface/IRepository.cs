@@ -1,11 +1,9 @@
 ﻿namespace DMS_API.Repository.Interface
 {
-    public interface IRepository<T>
+    public interface IRepository<T> where T : class
     {
-        Task<IEnumerable<T>> GetAllAsync();
-        Task<T> GetByIdAsync(Guid id);
-        Task<T> AddAsync(T entity);
-        Task<T> UpdateAsync(T entity);
-        Task<T> DeleteAsync(Guid id);    
+        Task AddAsync(T entity);
+        void Update(T entity);
+        void Delete(T entity);    
     }
 }

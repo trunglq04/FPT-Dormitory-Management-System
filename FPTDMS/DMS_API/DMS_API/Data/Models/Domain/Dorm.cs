@@ -1,4 +1,4 @@
-﻿namespace DMS_API.Models.Domain
+﻿namespace DMS_API.Data.Models.Domain
 {
     public class Dorm
     {

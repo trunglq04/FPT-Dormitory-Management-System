@@ -1,13 +1,13 @@
-﻿using DMS_API.Models.Domain;
+﻿using DMS_API.Data.Models.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DMS_API.Infrastructure.Configurations
 {
-    public class AppUserConfiguration
-        : IEntityTypeConfiguration<AppUser>
+    public class UserConfiguration
+        : IEntityTypeConfiguration<User>
     {
-        public void Configure(EntityTypeBuilder<AppUser> builder)
+        public void Configure(EntityTypeBuilder<User> builder)
         {
             builder.Property(u => u.FullName)
                 .HasMaxLength(50);
