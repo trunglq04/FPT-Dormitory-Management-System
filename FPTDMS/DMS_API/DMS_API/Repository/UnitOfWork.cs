@@ -7,12 +7,13 @@ namespace DMS_API.Repository
     {
         private readonly ApplicationDbContext _context;
         public IUserRepository Users { get; private set; }
-        // public IHouseRepository Houses { get; private set; }
+        public IServiceRepository Services { get; private set; }
 
         public UnitOfWork(ApplicationDbContext context)
         {
             _context = context;
             Users = new UserRepository(_context);
+            Services = new ServiceRepository(_context);
         }
 
         public async Task SaveChanges()
