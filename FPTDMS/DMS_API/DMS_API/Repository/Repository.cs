@@ -1,39 +1,34 @@
-﻿using DMS_API.Repository.Interface;
+using DMS_API.DataAccess;
+using DMS_API.Repository.Interface;
 using Microsoft.EntityFrameworkCore;
 
 namespace DMS_API.Repository
 {
     public class Repository<T> : IRepository<T> where T : class
     {
-        private readonly DbContext _dbContext;
+        private readonly ApplicationDbContext _context;
+        private readonly DbSet<T> _entities;
 
-        public Repository(DbContext dbContext)
+        public Repository(ApplicationDbContext context)
         {
-            _dbContext = dbContext;
-        }
-        public Task<T> AddAsync(T entity)
-        {
-            throw new NotImplementedException();
+            _context = context;
+            _entities = _context.Set<T>();
         }
 
-        public Task<T> DeleteAsync(Guid id)
+        public async Task AddAsync(T entity)
         {
-            throw new NotImplementedException();
+            await _entities.AddAsync(entity);
         }
 
-        public Task<IEnumerable<T>> GetAllAsync()
+        public void Update(T entity)
         {
-            throw new NotImplementedException();
+            _entities.Attach(entity);
+            _context.Entry(entity).State = EntityState.Modified;
         }
 
-        public Task<T> GetByIdAsync(Guid id)
+        public void Delete(T entity)
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<T> UpdateAsync(T entity)
-        {
-            throw new NotImplementedException();
+            _entities.Remove(entity);
         }
     }
 }

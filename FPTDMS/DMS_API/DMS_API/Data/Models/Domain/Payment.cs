@@ -1,8 +1,8 @@
-﻿namespace DMS_API.Models.Domain
+﻿namespace DMS_API.Data.Models.Domain
 {
     public class Payment
     {
-        string Guid { get; set; }
+        public Guid Id { get; set; }
         public string Name { get; set; }
 
     }

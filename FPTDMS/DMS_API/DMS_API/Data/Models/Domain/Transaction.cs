@@ -1,9 +1,9 @@
-﻿namespace DMS_API.Models.Domain
+﻿namespace DMS_API.Data.Models.Domain
 {
     public class Transaction
     {
         public Guid Id { get; set; }
-        public Guid AppUserId { get; set; }
+        public Guid UserId { get; set; }
         public Guid OrderId { get; set; }
         public string PaymentMethod { get; set; }
         public string Status { get; set; }
@@ -12,7 +12,7 @@
 
 
         // Navigation properties
-        public AppUser AppUser { get; set; }
+        public User User { get; set; }
         public Order Order { get; set; }
         public Payment Payment { get; set; }
     }
