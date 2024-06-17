@@ -1,5 +1,5 @@
-using DMS_API.Data.Models.Domain;
 using DMS_API.DataAccess;
+using DMS_API.Models.Domain;
 using DMS_API.Repository.Interface;
 using Microsoft.EntityFrameworkCore;
 

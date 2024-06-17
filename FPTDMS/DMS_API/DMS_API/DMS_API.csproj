@@ -32,7 +32,7 @@
 
   <ItemGroup>
     <Folder Include="Data\Migrations\" />
-    <Folder Include="Data\Models\DTO\" />
+    <Folder Include="Models\DTO\" />
     <Folder Include="Mapping\" />
     <Folder Include="Services\" />
   </ItemGroup>

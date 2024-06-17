@@ -1,10 +1,11 @@
-using DMS_API.Data.Models.Domain;
+using DMS_API.Models.Domain;
 
 namespace DMS_API.Repository.Interface
 {
     public interface IUserRepository : IRepository<User>
     {
-        Task<IEnumerable<User>> GetAllUsers();
-        Task<User?> GetUserById(Guid userId);
+        Task<List<string>?> GetRoleAsync(User user);
+        Task<IEnumerable<User>> GetAllUsersAsync();
+        Task<User?> GetUserByIdAsync(Guid userId);
     }
 }
