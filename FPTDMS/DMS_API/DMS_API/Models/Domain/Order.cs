@@ -11,6 +11,6 @@
         public float TotalPrice { get; set; }
 
         // Navigation properties
-        public User User { get; set; }
+        public AppUser User { get; set; }
     }
 }

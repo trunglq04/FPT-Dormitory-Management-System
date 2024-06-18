@@ -24,12 +24,13 @@ builder.Services.AddCors(options =>
         });
 });
 
-builder.Services.AddIdentity<User, IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>()
+builder.Services.AddIdentity<AppUser, IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext, Guid>()
     .AddDefaultTokenProviders();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
        options.UseSqlServer(connectionString));
+
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
@@ -50,42 +51,23 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Issuer"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? string.Empty))
     };
 });
 
 
 builder.Services.AddAuthorization();
 
-builder.Services.AddIdentityApiEndpoints<User>()
+builder.Services.AddIdentityApiEndpoints<AppUser>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddEndpointsApiExplorer();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddSwaggerGen();
 
 // Add services to the container.
 builder.Services.AddControllers();
 
 var app = builder.Build();
-
-app.UseDefaultFiles();
-app.UseStaticFiles();
-app.MapIdentityApi<User>();
-
-app.MapPost("/logout", async (SignInManager<User> signInManager) =>
-{
-    // Remove the cookies
-    await signInManager.SignOutAsync();
-    return Results.Ok();
-}).RequireAuthorization();
-
-app.MapGet("/pingauth", (ClaimsPrincipal user) =>
-{
-    var email = user.FindFirstValue(ClaimTypes.Email);
-    return Results.Ok(new { Email = email });
-}).RequireAuthorization();
-
 
 using (var scope = app.Services.CreateScope())
 {
@@ -97,6 +79,23 @@ using (var scope = app.Services.CreateScope())
         throw new NotImplementedException("Cannot connect to database");
     }
 }
+
+app.UseDefaultFiles();
+app.UseStaticFiles();
+app.MapIdentityApi<AppUser>();
+
+app.MapPost("/logout", async (SignInManager<AppUser> signInManager) =>
+{
+    // Remove the cookies
+    await signInManager.SignOutAsync();
+    return Results.Ok();
+}).RequireAuthorization();
+
+app.MapGet("/pingauth", (ClaimsPrincipal user) =>
+{
+    var email = user.FindFirstValue(ClaimTypes.Email);
+    return Results.Ok(new { Email = email });
+}).RequireAuthorization();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -113,7 +112,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-
-app.MapFallbackToFile("index.html");
+// app.MapFallbackToFile("index.html");
 
 app.Run();

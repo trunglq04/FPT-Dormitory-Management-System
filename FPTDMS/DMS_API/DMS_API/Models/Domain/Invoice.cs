@@ -14,7 +14,7 @@
 
         // Navigation properties
         public Transaction Transaction { get; set; }
-        public User User { get; set; }
+        public AppUser User { get; set; }
         public Payment Payment { get; set; }
     }
 }
