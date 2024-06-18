@@ -13,9 +13,9 @@ namespace DMS_API.Repository
         {
             _context = context;
         }
-        public async Task<IEnumerable<Service>> GetAllServices()
-        {
-            return await _context.Services.ToListAsync();
-        }
+        // public async Task<IEnumerable<Service>> GetAllServices()
+        // {
+        //     // return await _context.Services.ToListAsync();
+        // }
     }
 }
