@@ -2,10 +2,10 @@ using DMS_API.Models.Domain;
 
 namespace DMS_API.Repository.Interface
 {
-    public interface IUserRepository : IRepository<User>
+    public interface IUserRepository : IRepository<AppUser>
     {
-        Task<List<string>?> GetRoleAsync(User user);
-        Task<IEnumerable<User>> GetAllUsersAsync();
-        Task<User?> GetUserByIdAsync(Guid userId);
+        Task<List<string>?> GetRoleAsync(AppUser user);
+        Task<IEnumerable<AppUser>> GetAllUsersAsync();
+        Task<AppUser?> GetUserByIdAsync(Guid userId);
     }
 }

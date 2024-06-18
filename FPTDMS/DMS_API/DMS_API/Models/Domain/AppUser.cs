@@ -2,7 +2,7 @@
 
 namespace DMS_API.Models.Domain
 {
-    public class User : IdentityUser
+    public class AppUser : IdentityUser<Guid>
     {
         public string? FirstName { get; set; }
         public string? LastName { get; set; }
@@ -12,7 +12,7 @@ namespace DMS_API.Models.Domain
         public string? Description { get; set; }
         public string? Picture { get; set; }
 
-        public Guid BalanceId { get; set; }
+        public Balance? Balance { get; set; }
 
     }
 }
