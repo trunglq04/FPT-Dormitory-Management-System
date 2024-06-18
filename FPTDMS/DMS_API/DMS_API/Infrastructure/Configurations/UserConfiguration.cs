@@ -1,4 +1,4 @@
-﻿using DMS_API.Data.Models.Domain;
+﻿using DMS_API.Models.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
