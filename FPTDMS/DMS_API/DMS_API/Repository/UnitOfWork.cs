@@ -1,18 +1,21 @@
 using DMS_API.DataAccess;
+using DMS_API.Models.Domain;
 using DMS_API.Repository.Interface;
+using Microsoft.AspNetCore.Identity;
 
 namespace DMS_API.Repository
 {
     public class UnitOfWork : IUnitOfWork
     {
         private readonly ApplicationDbContext _context;
+         private readonly UserManager<AppUser> _userManager;
         public IUserRepository Users { get; private set; }
         public IServiceRepository Services { get; private set; }
 
         public UnitOfWork(ApplicationDbContext context)
         {
             _context = context;
-            Users = new UserRepository(_context);
+            Users = new UserRepository(_context, _userManager);
             Services = new ServiceRepository(_context);
         }
 
