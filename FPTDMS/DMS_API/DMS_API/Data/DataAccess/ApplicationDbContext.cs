@@ -22,7 +22,7 @@ namespace DMS_API.DataAccess
         // public DbSet<Room> Rooms { get; set; }
         // public DbSet<Service> Services { get; set; }
         // public DbSet<Payment> Payments { get; set; }
-        public DbSet<Balance> balances {get; set;}
+        public DbSet<Balance> Balances {get; set;}
 
         public void Configure(EntityTypeBuilder<AppUser> builder)
         {
