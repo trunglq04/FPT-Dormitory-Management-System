@@ -8,13 +8,14 @@ namespace DMS_API.Repository
     public class UnitOfWork : IUnitOfWork
     {
         private readonly ApplicationDbContext _context;
-         private readonly UserManager<AppUser> _userManager;
+        private readonly UserManager<AppUser> _userManager;
         public IUserRepository Users { get; private set; }
         public IServiceRepository Services { get; private set; }
 
-        public UnitOfWork(ApplicationDbContext context)
+        public UnitOfWork(ApplicationDbContext context, UserManager<AppUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
             Users = new UserRepository(_context, _userManager);
             Services = new ServiceRepository(_context);
         }
