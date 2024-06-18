@@ -4,24 +4,27 @@ using System.Reflection;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using DMS_API.Data;
 using DMS_API.Models.Domain;
+using Microsoft.AspNetCore.Identity;
 
 namespace DMS_API.DataAccess
 {
-    public class ApplicationDbContext : IdentityDbContext<User>, IEntityTypeConfiguration<User>
+    public class ApplicationDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options): base(options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) 
+            : base(options)
         {
         }
 
         // Add DbSet for other entities in your application
-        public DbSet<Dorm> Dorms { get; set; }
-        public DbSet<House> Houses { get; set; }
-        public DbSet<Floor> Floors { get; set; }
-        public DbSet<Room> Rooms { get; set; }
-        public DbSet<Service> Services { get; set; }
-        public DbSet<Payment> Payments { get; set; }
+        // public DbSet<Dorm> Dorms { get; set; }
+        // public DbSet<House> Houses { get; set; }
+        // public DbSet<Floor> Floors { get; set; }
+        // public DbSet<Room> Rooms { get; set; }
+        // public DbSet<Service> Services { get; set; }
+        // public DbSet<Payment> Payments { get; set; }
+        public DbSet<Balance> balances {get; set;}
 
-        public void Configure(EntityTypeBuilder<User> builder)
+        public void Configure(EntityTypeBuilder<AppUser> builder)
         {
             throw new NotImplementedException();
         }

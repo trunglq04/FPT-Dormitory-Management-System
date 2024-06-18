@@ -6,28 +6,28 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DMS_API.Repository
 {
-    public class UserRepository : Repository<User>, IUserRepository
+    public class UserRepository : Repository<AppUser>, IUserRepository
     {
         private readonly ApplicationDbContext _context;
-        private readonly UserManager<User> _userManager;
+        private readonly UserManager<AppUser> _userManager;
 
-        public UserRepository(ApplicationDbContext context, UserManager<User> userManager) : base(context)
+        public UserRepository(ApplicationDbContext context, UserManager<AppUser> userManager) : base(context)
         {
             _context = context;
             _userManager = userManager;
         }
 
-        public async Task<IEnumerable<User>> GetAllUsersAsync()
+        public async Task<IEnumerable<AppUser>> GetAllUsersAsync()
         {
             return await _context.Users.ToListAsync();
         }
 
-        public async Task<List<string>?> GetRoleAsync(User user)
+        public async Task<List<string>?> GetRoleAsync(AppUser user)
         {
             return await _userManager.GetRolesAsync(user) as List<string>;
         }
 
-        public async Task<User?> GetUserByIdAsync(Guid userId)
+        public async Task<AppUser?> GetUserByIdAsync(Guid userId)
         {
             return await _context.Users.FirstOrDefaultAsync(u => Guid.Parse(u.Id) == userId);
         }
