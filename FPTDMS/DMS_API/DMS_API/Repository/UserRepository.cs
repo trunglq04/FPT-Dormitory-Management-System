@@ -29,7 +29,7 @@ namespace DMS_API.Repository
 
         public async Task<AppUser?> GetUserByIdAsync(Guid userId)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => Guid.Parse(u.Id) == userId);
+            return await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
         }
     }
 }
