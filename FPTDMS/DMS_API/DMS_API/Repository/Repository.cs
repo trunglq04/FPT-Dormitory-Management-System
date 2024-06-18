@@ -20,11 +20,11 @@ namespace DMS_API.Repository
             await _entities.AddAsync(entity);
         }
 
-        public void Update(T entity)
-        {
-            _entities.Attach(entity);
-            _context.Entry(entity).State = EntityState.Modified;
-        }
+        // public void Update(T entity)
+        // {
+        //     _entities.Attach(entity);
+        //     _context.Entry(entity).State = EntityState.Modified;
+        // }
 
         public void Delete(T entity)
         {
