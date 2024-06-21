@@ -8,10 +8,9 @@ using Microsoft.AspNetCore.Identity;
 
 namespace DMS_API.DataAccess
 {
-    public class ApplicationDbContext : IdentityDbContext<AppUser, IdentityRole<Guid>, Guid>
+    public class ApplicationDbContext : IdentityDbContext<AppUser, AppRole, Guid>
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) 
-            : base(options)
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
         }
 
