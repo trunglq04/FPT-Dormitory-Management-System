@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using AutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +23,9 @@ builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddAutoMapper(typeof(Mapper));
+
+
 
 //builder.Services.AddIdentityApiEndpoints<AppUser>()
 //    .AddEntityFrameworkStores<ApplicationDbContext>();
@@ -83,6 +87,7 @@ builder.Services.Configure<IdentityOptions>(options =>
 
 #region Repositories DI
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IDormRepository, DormRepository>();
 #endregion
 //builder.Services.AddSingleton<IMyService, MyService>();
 
