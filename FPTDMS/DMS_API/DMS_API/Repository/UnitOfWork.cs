@@ -14,7 +14,9 @@ namespace DMS_API.Repository
         public IUserRepository Users { get; private set; }
         public IServiceRepository Services { get; private set; }
 
-        public IDormRepository Dorms { get; private set; }
+        public IDormRepository Dorms { get; set; }
+
+        public IFloorRepository Floors {get; set; }
 
 
         public UnitOfWork(ApplicationDbContext context, UserManager<AppUser> userManager, IMapper mapper)
@@ -25,6 +27,7 @@ namespace DMS_API.Repository
             Users = new UserRepository(_context, _userManager);
             Services = new ServiceRepository(_context);
             Dorms = new DormRepository(_context, _mapper);
+            Floors = new FloorRepository(_context, _mapper);
         }
 
         public async Task SaveChanges()

@@ -5,7 +5,7 @@ namespace DMS_API.Repository.Interface
     {
         IUserRepository Users {get;}
         IDormRepository Dorms { get; }
-
+        IFloorRepository Floors { get; }
         Task SaveChanges();
     }
 }

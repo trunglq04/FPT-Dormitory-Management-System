@@ -1,4 +1,4 @@
-using DMS_API.Models.Domain;
+﻿using DMS_API.Models.Domain;
 using DMS_API.DataAccess;
 using DMS_API.Repository;
 using DMS_API.Repository.Interface;
@@ -23,7 +23,14 @@ builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddAutoMapper(typeof(Mapper));
+builder.Services.AddAutoMapper(typeof(DMS_API.Helpers.Mapper));
+
+//builder.Services.AddControllers()
+//        .AddJsonOptions(options =>
+//        {
+//            options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+//            //options.JsonSerializerOptions.MaxDepth = 64; 
+//        });
 
 
 
@@ -88,6 +95,7 @@ builder.Services.Configure<IdentityOptions>(options =>
 #region Repositories DI
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IDormRepository, DormRepository>();
+builder.Services.AddScoped<IFloorRepository, FloorRepository>();
 #endregion
 //builder.Services.AddSingleton<IMyService, MyService>();
 

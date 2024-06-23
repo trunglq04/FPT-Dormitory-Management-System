@@ -1,10 +1,8 @@
-﻿using DMS_API.Models.Domain;
+﻿using AutoMapper;
 using DMS_API.Models.DTO;
 using DMS_API.Repository.Interface;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+
 
 namespace DMS_API.Controllers
 {
@@ -13,10 +11,12 @@ namespace DMS_API.Controllers
     public class DormController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public DormController(IUnitOfWork unitOfWork)
+        public DormController(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
         // GET: api/Dorm
@@ -24,7 +24,8 @@ namespace DMS_API.Controllers
         public async Task<IActionResult> GetAllDorms()
         {
             var dorms = await _unitOfWork.Dorms.GetAllAsync();
-            return Ok(dorms);
+            var dormDTOs = _mapper.Map<List<DormDTO>>(dorms);
+            return Ok(dormDTOs);
         }
 
         // GET: api/Dorm/{id}
@@ -35,7 +36,8 @@ namespace DMS_API.Controllers
             if (dorm == null)
                 return NotFound();
 
-            return Ok(dorm);
+            var dormDTO = _mapper.Map<DormDTO>(dorm);
+            return Ok(dormDTO);
         }
     }
 }
