@@ -18,7 +18,9 @@ namespace DMS_API.Repository
 
         public IFloorRepository Floors {get; set; }
 
+        public IHouseRepository Houses { get; set; }
 
+        public IRoomRepository Rooms { get; set; }
         public UnitOfWork(ApplicationDbContext context, UserManager<AppUser> userManager, IMapper mapper)
         {
             _context = context;
@@ -28,6 +30,8 @@ namespace DMS_API.Repository
             Services = new ServiceRepository(_context);
             Dorms = new DormRepository(_context, _mapper);
             Floors = new FloorRepository(_context, _mapper);
+            Houses = new HouseRepository(_context, _mapper);
+            Rooms = new RoomRepository(_context, _mapper);
         }
 
         public async Task SaveChanges()
