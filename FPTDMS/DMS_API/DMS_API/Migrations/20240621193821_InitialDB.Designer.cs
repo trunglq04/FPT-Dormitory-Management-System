@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DMS_API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240621101110_InitialDB")]
+    [Migration("20240621193821_InitialDB")]
     partial class InitialDB
     {
         /// <inheritdoc />
@@ -167,7 +167,7 @@ namespace DMS_API.Migrations
                         {
                             Id = new Guid("8e445865-a24d-4543-a6c6-9443d048cdb9"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "765e3db1-94d5-460c-99b7-456db1b52437",
+                            ConcurrencyStamp = "842f65a7-23e7-4167-8d85-0f0c61baba6d",
                             Email = "admin@fpt.vn",
                             EmailConfirmed = false,
                             FirstName = "Admin",
@@ -176,7 +176,7 @@ namespace DMS_API.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@FPT.VN",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEG8qbgs1B/kbXO4AgMh1Smg6NtvwEuKOaDpp0CRYma6EwOxfYrvRqmG7TfQt3Y8aLg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEDQ4pMKlLvE2LMo07db2IYFKS0MAvUaDIADV0JTJEf6NtKqrqySET22yMZ/FTQn7SQ==",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
                             UserName = "admin"
@@ -185,7 +185,7 @@ namespace DMS_API.Migrations
                         {
                             Id = new Guid("1fb571fb-110d-438a-9ba8-9a2df842af6b"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "1438be39-17b2-4a7e-837d-91711d6a0c83",
+                            ConcurrencyStamp = "9fc1ed28-4327-4db5-9ebb-8c294b2caf42",
                             Email = "client@fpt.vn",
                             EmailConfirmed = false,
                             FirstName = "User",
@@ -194,7 +194,7 @@ namespace DMS_API.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "CLIENT@FPT.VN",
                             NormalizedUserName = "CLIENT",
-                            PasswordHash = "AQAAAAIAAYagAAAAEO4L0e+o0VhyrOOfWHsONQsqfnb92g1ODZRnS76g2N4ow8zbeSuBuPSt49jjLY2YDw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAECE8Kqfj/XLgjIkD0xi7gkOQm2VBrYni1V75faWjO6n55cNSgQIhdwMNAD+Wqd5zhQ==",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
                             UserName = "client"

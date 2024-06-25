@@ -218,8 +218,8 @@ namespace DMS_API.Migrations
                 columns: new[] { "Id", "AccessFailedCount", "Address", "ConcurrencyStamp", "DateOfBirth", "Description", "Email", "EmailConfirmed", "FirstName", "Gender", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "Picture", "SecurityStamp", "TwoFactorEnabled", "UserName" },
                 values: new object[,]
                 {
-                    { new Guid("1fb571fb-110d-438a-9ba8-9a2df842af6b"), 0, null, "1438be39-17b2-4a7e-837d-91711d6a0c83", null, null, "client@fpt.vn", false, "User", "Female", "Normal", false, null, "CLIENT@FPT.VN", "CLIENT", "AQAAAAIAAYagAAAAEO4L0e+o0VhyrOOfWHsONQsqfnb92g1ODZRnS76g2N4ow8zbeSuBuPSt49jjLY2YDw==", null, false, null, null, false, "client" },
-                    { new Guid("8e445865-a24d-4543-a6c6-9443d048cdb9"), 0, null, "765e3db1-94d5-460c-99b7-456db1b52437", null, null, "admin@fpt.vn", false, "Admin", "Male", "Admin", false, null, "ADMIN@FPT.VN", "ADMIN", "AQAAAAIAAYagAAAAEG8qbgs1B/kbXO4AgMh1Smg6NtvwEuKOaDpp0CRYma6EwOxfYrvRqmG7TfQt3Y8aLg==", null, false, null, null, false, "admin" }
+                    { new Guid("1fb571fb-110d-438a-9ba8-9a2df842af6b"), 0, null, "9fc1ed28-4327-4db5-9ebb-8c294b2caf42", null, null, "client@fpt.vn", false, "User", "Female", "Normal", false, null, "CLIENT@FPT.VN", "CLIENT", "AQAAAAIAAYagAAAAECE8Kqfj/XLgjIkD0xi7gkOQm2VBrYni1V75faWjO6n55cNSgQIhdwMNAD+Wqd5zhQ==", null, false, null, null, false, "client" },
+                    { new Guid("8e445865-a24d-4543-a6c6-9443d048cdb9"), 0, null, "842f65a7-23e7-4167-8d85-0f0c61baba6d", null, null, "admin@fpt.vn", false, "Admin", "Male", "Admin", false, null, "ADMIN@FPT.VN", "ADMIN", "AQAAAAIAAYagAAAAEDQ4pMKlLvE2LMo07db2IYFKS0MAvUaDIADV0JTJEf6NtKqrqySET22yMZ/FTQn7SQ==", null, false, null, null, false, "admin" }
                 });
 
             migrationBuilder.InsertData(
