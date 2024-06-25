@@ -1,2 +1,13 @@
 # For more info on HTTP files go to https://aka.ms/vs/httpfile
-# POST: https://localhost:7089/api/auth/login
+GET https://localhost:7089/api/foo
+Authorization: Bearer <token>
+
+###
+
+POST https://localhost:7089/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "authen@gmail.com",
+  "password": "@Authen123" 
+}
