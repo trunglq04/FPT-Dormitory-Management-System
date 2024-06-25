@@ -31,5 +31,10 @@ namespace DMS_API.Repository
         {
             return await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
         }
+
+        public Task<AppUser?> UpdateUserAsync(AppUser user)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

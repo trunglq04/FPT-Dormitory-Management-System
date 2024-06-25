@@ -1,3 +1,4 @@
+using AutoMapper;
 using DMS_API.DataAccess;
 using DMS_API.Models.Domain;
 using DMS_API.Repository.Interface;
@@ -9,15 +10,28 @@ namespace DMS_API.Repository
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<AppUser> _userManager;
+        private readonly IMapper _mapper;
         public IUserRepository Users { get; private set; }
         public IServiceRepository Services { get; private set; }
 
-        public UnitOfWork(ApplicationDbContext context, UserManager<AppUser> userManager)
+        public IDormRepository Dorms { get; set; }
+
+        public IFloorRepository Floors {get; set; }
+
+        public IHouseRepository Houses { get; set; }
+
+        public IRoomRepository Rooms { get; set; }
+        public UnitOfWork(ApplicationDbContext context, UserManager<AppUser> userManager, IMapper mapper)
         {
             _context = context;
             _userManager = userManager;
+            _mapper = mapper;
             Users = new UserRepository(_context, _userManager);
             Services = new ServiceRepository(_context);
+            Dorms = new DormRepository(_context, _mapper);
+            Floors = new FloorRepository(_context, _mapper);
+            Houses = new HouseRepository(_context, _mapper);
+            Rooms = new RoomRepository(_context, _mapper);
         }
 
         public async Task SaveChanges()

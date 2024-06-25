@@ -1,10 +1,12 @@
-using DMS_API.Models.Domain;
+﻿using DMS_API.Models.Domain;
 using DMS_API.DataAccess;
 using DMS_API.Repository;
 using DMS_API.Repository.Interface;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +25,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddSwaggerGen();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 //builder.Services.AddIdentityApiEndpoints<AppUser>()
 //    .AddEntityFrameworkStores<ApplicationDbContext>();
@@ -90,6 +93,10 @@ builder.Services.Configure<IdentityOptions>(options =>
 
 #region Repositories DI
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IDormRepository, DormRepository>();
+builder.Services.AddScoped<IFloorRepository, FloorRepository>();
+builder.Services.AddScoped<IHouseRepository, HouseRepository>();
+builder.Services.AddScoped<IRoomRepository, RoomRepository>();
 #endregion
 //builder.Services.AddSingleton<IMyService, MyService>();
 
