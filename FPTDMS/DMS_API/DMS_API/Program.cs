@@ -38,8 +38,13 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddIdentity<AppUser, AppRole>(options =>
 
 {
-    options.SignIn.RequireConfirmedAccount = false;
-    options.Lockout.AllowedForNewUsers = true; // Enables user lockout, to prevent brute - force attacks against user passwords
+    // No confirmation email required after register for the next login
+    options.SignIn.RequireConfirmedAccount = false; 
+    // Enables user lockout, to prevent brute - force attacks against user passwords
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+    options.Lockout.MaxFailedAccessAttempts = 5;
+    options.Lockout.AllowedForNewUsers = true; 
+    // Password settings
     options.Password.RequiredLength = 8;
     options.Password.RequireNonAlphanumeric = true;
     options.Password.RequireDigit = false;
