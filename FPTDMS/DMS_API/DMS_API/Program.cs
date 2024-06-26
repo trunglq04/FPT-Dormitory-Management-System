@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using AutoMapper;
+using DMS_API.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,8 +32,15 @@ builder.Services.AddSwaggerGen();
 //builder.Services.AddIdentityApiEndpoints<AppUser>()
 //    .AddEntityFrameworkStores<ApplicationDbContext>();
 
-builder.Services.AddIdentity<AppUser, AppRole>(options => options.SignIn.RequireConfirmedAccount = false)
-    //.AddRoles<AppRole>()
+builder.Services.AddIdentity<AppUser, AppRole>(options => 
+{
+    options.SignIn.RequireConfirmedAccount = false;
+    options.Lockout.AllowedForNewUsers = true; // Enables user lockout, to prevent brute - force attacks against user passwords
+    options.Password.RequiredLength = 8;
+    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequireDigit = false;
+})
+    .AddRoles<AppRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddApiEndpoints(); // support for login, register, logout, etc.
     //.AddDefaultTokenProviders()
@@ -97,6 +106,12 @@ builder.Services.AddScoped<IDormRepository, DormRepository>();
 builder.Services.AddScoped<IFloorRepository, FloorRepository>();
 builder.Services.AddScoped<IHouseRepository, HouseRepository>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
+var mapperConfig = new MapperConfiguration(mc =>
+{
+    mc.AddProfile(new MappingProfile());
+});
+IMapper mapper = mapperConfig.CreateMapper();
+builder.Services.AddSingleton(mapper);
 #endregion
 //builder.Services.AddSingleton<IMyService, MyService>();
 
