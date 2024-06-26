@@ -20,16 +20,17 @@ namespace DMS_API.Repository
             try
             {
                 var dorms = await _context.Dorms
-                    .Include(d => d.Floors)
-                        .ThenInclude(f => f.Houses)  // Include the Houses
+                     .Include(d => d.Floors)
+                        .ThenInclude(f => f.Houses)
+                            .ThenInclude(h => h.Rooms)
                     .ToListAsync();
 
                 return dorms;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                // Log the exception (ex) here if needed
-                return new List<Dorm>(); // Or handle it in another way that makes sense for your application
+                
+                return new List<Dorm>(); 
             }
         }
 
@@ -38,8 +39,9 @@ namespace DMS_API.Repository
             try
             {
                 var dorm = await _context.Dorms
-                    .Include(d => d.Floors)
-                        .ThenInclude(f => f.Houses)  // Include the Houses
+                     .Include(d => d.Floors)
+                        .ThenInclude(f => f.Houses)
+                            .ThenInclude(h => h.Rooms)
                     .FirstOrDefaultAsync(d => d.Id == id);
 
                 return dorm;

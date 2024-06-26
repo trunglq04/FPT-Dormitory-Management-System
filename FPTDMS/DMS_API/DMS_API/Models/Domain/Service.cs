@@ -3,8 +3,17 @@
     public class Service
     {
         public Guid Id { get; set; }
-        public string Name { get; set; }
+        public DateTime BookingDate { get; set; }
+        public string ServiceName { get; set; }
+        public decimal Price { get; set; }
         public string Description { get; set; }
-        public float Price { get; set; }
+
+
+        //Navigation properties
+        public Guid UserId { get; set; }
+        public AppUser User { get; set; }
+
+        public Guid RoomId { get; set; }
+        public Room Room { get; set; }
     }
 }
