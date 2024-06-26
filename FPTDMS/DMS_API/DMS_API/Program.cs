@@ -8,66 +8,75 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using AutoMapper;
+using DMS_API.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? 
+// Add services to the container.
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
         throw new InvalidOperationException("Connection string 'ApplicationDbContextConnection' not found.");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
        options.UseSqlServer(connectionString));
 
-builder.Services.AddAuthorization();
 
-// Add services to the container.
+//builder.Services.AddAuthorization();
+
+
 builder.Services.AddControllers();
+
+builder.Services.AddSwaggerGen();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddAutoMapper(typeof(DMS_API.Helpers.Mapper));
-
-//builder.Services.AddControllers()
-//        .AddJsonOptions(options =>
-//        {
-//            options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
-//            //options.JsonSerializerOptions.MaxDepth = 64; 
-//        });
-
-
 
 //builder.Services.AddIdentityApiEndpoints<AppUser>()
 //    .AddEntityFrameworkStores<ApplicationDbContext>();
 
+builder.Services.AddIdentity<AppUser, AppRole>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = false;
+    options.Lockout.AllowedForNewUsers = true; // Enables user lockout, to prevent brute - force attacks against user passwords
+    options.Password.RequiredLength = 8;
+    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequireDigit = false;
+})
+    .AddRoles<AppRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddApiEndpoints(); // support for login, register, logout, etc.
+                        //.AddDefaultTokenProviders()
+
+
+builder.Services.AddAuthentication()
+  .AddBearerToken(IdentityConstants.BearerScheme);
+
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("api", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.AddAuthenticationSchemes(IdentityConstants.BearerScheme);
+    });
+
 
 #region Authentication
 
-builder.Services.AddIdentity<AppUser, AppRole>(options => options.SignIn.RequireConfirmedAccount = true)
-    //.AddRoles<AppRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddDefaultTokenProviders();
-    //.AddApiEndpoints();
-
-//builder.Services.AddAuthentication()
-//    .AddBearerToken(IdentityConstants.BearerScheme);
-
-
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? string.Empty))
-    };
-});
+//builder.Services.AddAuthentication(options =>
+//{
+//    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+//    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+//})
+//    .AddJwtBearer(options =>
+//    {
+//        options.TokenValidationParameters = new TokenValidationParameters
+//        {
+//            ValidateIssuer = true,
+//            ValidateAudience = true,
+//            ValidateLifetime = true,
+//            ValidateIssuerSigningKey = true,
+//            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+//            ValidAudience = builder.Configuration["Jwt:Audience"],
+//            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? string.Empty))
+//        };
+//    });
 
 
 builder.Services.Configure<IdentityOptions>(options =>
@@ -81,13 +90,12 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequiredUniqueChars = 1;
 
     // Lockout settings.
-    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-    options.Lockout.MaxFailedAccessAttempts = 5;
-    options.Lockout.AllowedForNewUsers = true;
+    //options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+    //options.Lockout.MaxFailedAccessAttempts = 5;
+    //options.Lockout.AllowedForNewUsers = true;
 
     // User settings.
-    options.User.AllowedUserNameCharacters =
-    "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+    options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
     options.User.RequireUniqueEmail = true;
 });
 #endregion
@@ -98,27 +106,27 @@ builder.Services.AddScoped<IDormRepository, DormRepository>();
 builder.Services.AddScoped<IFloorRepository, FloorRepository>();
 builder.Services.AddScoped<IHouseRepository, HouseRepository>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
+var mapperConfig = new MapperConfiguration(mc =>
+{
+    mc.AddProfile(new MappingProfile());
+});
+IMapper mapper = mapperConfig.CreateMapper();
+builder.Services.AddSingleton(mapper);
 #endregion
 //builder.Services.AddSingleton<IMyService, MyService>();
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAllOrigins",
-        builder =>
-        {
-            builder.AllowAnyOrigin()
-                   .AllowAnyMethod()
-                   .AllowAnyHeader();
-        });
-});
-
-builder.Services.AddControllers();
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("AllowAllOrigins",
+//        builder =>
+//        {
+//            builder.AllowAnyOrigin()
+//                   .AllowAnyMethod()
+//                   .AllowAnyHeader();
+//        });
+//});
 
 var app = builder.Build();
-
-app.UseDefaultFiles();
-app.UseStaticFiles();
-
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -126,19 +134,32 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+else
+{
+    app.UseExceptionHandler("/Error");
+};
 
-app.UseHttpsRedirection();
+//app.UseDefaultFiles();
+app.UseStaticFiles();
 
-app.UseCors("AllowAllOrigins");
+app.UseRouting();
+//app.UseHttpsRedirection();
+//app.UseCors("AllowAllOrigins");
 
-app.UseAuthentication();
+//app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
 
 // app.MapFallbackToFile("index.html");
 
-//app.MapGroup("api/auth/app")
-//    .MapIdentityApi<AppUser>();
+app.MapGet("api/foo", () =>
+{
+    return new[] { "One", "Two", "Three" };
+})
+    .RequireAuthorization("api");
+
+app.MapGroup("api/auth")
+    .MapIdentityApi<AppUser>();
 
 app.Run();
