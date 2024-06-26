@@ -21,6 +21,8 @@ namespace DMS_API.Helpers
             CreateMap<UpdateFloorRequestDTO, Floor>().ReverseMap();
             CreateMap<AddHouseRequestDTO, House>().ReverseMap();
             CreateMap<UpdateHouseRequestDTO, House>().ReverseMap();
+            CreateMap<AddRoomRequestDTO, Room>().ReverseMap();
+            CreateMap<UpdateRoomRequestDTO, Room>().ReverseMap();
         }
     }
 }
