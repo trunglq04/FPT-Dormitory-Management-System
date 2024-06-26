@@ -13,6 +13,6 @@ namespace DMS_API.Models.Domain
         public string? Picture { get; set; }
 
         public Balance? Balance { get; set; }
-
+        public ICollection<Service>? Services { get; set; }
     }
 }
