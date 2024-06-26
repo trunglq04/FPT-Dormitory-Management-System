@@ -1,4 +1,5 @@
 ﻿using DMS_API.Models.Domain;
+using DMS_API.Models.DTO.Request;
 
 namespace DMS_API.Repository.Interface
 {
@@ -6,6 +7,7 @@ namespace DMS_API.Repository.Interface
     {
         Task<List<Room>> GetAllAsync();
         Task<Room?> GetByIdAsync(Guid id);
+        Task UpdateAsync(Guid id, UpdateRoomRequestDTO room);
     }
 
 }

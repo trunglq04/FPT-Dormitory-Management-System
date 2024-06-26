@@ -21,8 +21,10 @@ namespace DMS_API.Repository
 
         public async Task<List<House>> GetAllAsync()
         {
+
             var houses = await _context.Houses
-                .Include(h => h.Floor)  // Include the Floor
+                  .Include(h => h.Floor)  // Include the Floor
+                .Include(h => h.Rooms)  // Include the Rooms
                 .ToListAsync();
 
             return houses;
@@ -31,7 +33,8 @@ namespace DMS_API.Repository
         public async Task<House?> GetByIdAsync(Guid id)
         {
             var house = await _context.Houses
-                .Include(h => h.Floor)  // Include the Floor
+                  .Include(h => h.Floor)  // Include the Floor
+                .Include(h => h.Rooms)  // Include the Rooms
                 .FirstOrDefaultAsync(h => h.Id == id);
 
             return house;
