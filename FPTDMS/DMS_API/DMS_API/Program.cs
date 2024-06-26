@@ -23,7 +23,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 //builder.Services.AddAuthorization();
 
 
+
 builder.Services.AddControllers();
+
 
 builder.Services.AddSwaggerGen();
 builder.Services.AddEndpointsApiExplorer();
@@ -32,7 +34,9 @@ builder.Services.AddSwaggerGen();
 //builder.Services.AddIdentityApiEndpoints<AppUser>()
 //    .AddEntityFrameworkStores<ApplicationDbContext>();
 
+
 builder.Services.AddIdentity<AppUser, AppRole>(options =>
+
 {
     options.SignIn.RequireConfirmedAccount = false;
     options.Lockout.AllowedForNewUsers = true; // Enables user lockout, to prevent brute - force attacks against user passwords
@@ -43,7 +47,9 @@ builder.Services.AddIdentity<AppUser, AppRole>(options =>
     .AddRoles<AppRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddApiEndpoints(); // support for login, register, logout, etc.
+
                         //.AddDefaultTokenProviders()
+
 
 
 builder.Services.AddAuthentication()
@@ -134,9 +140,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-else
-{
-    app.UseExceptionHandler("/Error");
+else 
+{ 
+   app.UseExceptionHandler("/Error");
 };
 
 //app.UseDefaultFiles();
@@ -149,7 +155,7 @@ app.UseRouting();
 //app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
+//app.MapControllers();
 
 // app.MapFallbackToFile("index.html");
 

@@ -55,7 +55,7 @@ namespace DMS_API.Controllers
             if (user == null)
             {
                 _logger.LogWarning("User not found: {Email}", model.Email);
-                return Unauthorized(new { Error = "Invalid username or password" });
+                return Unauthorized(new { Error = "Invalid username or password" });    // Status code 401
             }
 
             // Changed to verify the password manually
@@ -64,24 +64,24 @@ namespace DMS_API.Controllers
             if (!isPasswordValid)
             {
                 _logger.LogWarning("Invalid password for user: {Email}", model.Email);
-                return Unauthorized(new { Error = "Invalid username or password" });
+                return Unauthorized(new { Error = "Invalid username or password" });    // Status code 401
             }
 
             _logger.LogInformation("Password verified for user: {Email}", model.Email);
             var token = GenerateJwtToken(user);
-            return Ok(new { AccessToken = token });
+            return Ok(new { access_token = token });
         }
 
         private string GenerateJwtToken(AppUser user)
         {
             var claims = new[]
             {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
-        };
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+            };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]?? string.Empty));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
@@ -89,7 +89,8 @@ namespace DMS_API.Controllers
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,
                 expires: DateTime.Now.AddDays(30),
-                signingCredentials: creds);
+                signingCredentials: creds
+            );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
