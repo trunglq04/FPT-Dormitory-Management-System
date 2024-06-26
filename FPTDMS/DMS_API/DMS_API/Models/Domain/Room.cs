@@ -8,5 +8,7 @@
         public int Capacity { get; set; }
         public Guid HouseId { get; set; }
         public House House { get; set; }
+
+        public ICollection<Service>? Services { get; set; }
     }
 }

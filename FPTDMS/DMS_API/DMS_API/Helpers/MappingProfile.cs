@@ -7,7 +7,9 @@ namespace DMS_API.Helpers
 {
     public class MappingProfile : Profile
     {
+
         public MappingProfile() 
+
         {
             CreateMap<AppUser, AppUserDTO>();
             //Domain to DTO
@@ -23,4 +25,6 @@ namespace DMS_API.Helpers
             CreateMap<UpdateHouseRequestDTO, House>().ReverseMap();
         }
     }
+
 }
+
