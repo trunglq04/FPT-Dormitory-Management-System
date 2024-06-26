@@ -5,11 +5,11 @@ using DMS_API.Models.DTO.Request;
 
 namespace DMS_API.Helpers
 {
-    public class Mapper : Profile
+    public class MappingProfile : Profile
     {
-        public Mapper() 
+        public MappingProfile() 
         {
-            CreateMap<Models.Domain.AppUser, Models.DTO.AppUserDTO>();
+            CreateMap<AppUser, AppUserDTO>();
             //Domain to DTO
             CreateMap<Dorm, DormDTO>().ReverseMap();
             CreateMap<Floor, FloorDTO>().ReverseMap();
