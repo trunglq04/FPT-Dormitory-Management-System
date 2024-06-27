@@ -164,7 +164,7 @@ namespace DMS_API.Migrations
                         {
                             Id = new Guid("8e445865-a24d-4543-a6c6-9443d048cdb9"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "39940b55-5688-4f12-bedf-9aecb260ece7",
+                            ConcurrencyStamp = "0c572e4e-d479-4a26-b052-70381b1877ad",
                             Email = "admin@fpt.vn",
                             EmailConfirmed = false,
                             FirstName = "Admin",
@@ -173,7 +173,7 @@ namespace DMS_API.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@FPT.VN",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEA0kzkQQI5v9lrA3wfoBxae1LKt8//cZk5t8OoO9sss8ysBob5o7EWdqmVYHTkhz/Q==",
+                            PasswordHash = "AQAAAAIAAYagAAAAELFBpQ4wFsbf+twDuBY0BsUIghYB5QbjXwQzfoJijcaGpqweBbHcMM7SF2KgI+oKyw==",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
                             UserName = "admin"
@@ -182,7 +182,7 @@ namespace DMS_API.Migrations
                         {
                             Id = new Guid("1fb571fb-110d-438a-9ba8-9a2df842af6b"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "2230a585-7a0f-4ead-8eea-57e2d2340597",
+                            ConcurrencyStamp = "4c1b2c38-a647-4496-9e17-d04b51581118",
                             Email = "client@fpt.vn",
                             EmailConfirmed = false,
                             FirstName = "User",
@@ -191,7 +191,7 @@ namespace DMS_API.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "CLIENT@FPT.VN",
                             NormalizedUserName = "CLIENT",
-                            PasswordHash = "AQAAAAIAAYagAAAAEPEmxWira4ei1mnCW6ehj9u9EbNgEjq/lR8PcJcm6TSbecDrgNyDxgbrTnvEJ7RY3A==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEEY37jN7yIRX8svxUcvthvBcJJjQK2GXObYho0D4F2xWJegsEAkfNDbaYoBVb7PGuw==",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
                             UserName = "client"
@@ -270,7 +270,6 @@ namespace DMS_API.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Type")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -327,10 +326,6 @@ namespace DMS_API.Migrations
                     b.Property<Guid>("HouseId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -340,6 +335,41 @@ namespace DMS_API.Migrations
                     b.HasIndex("HouseId");
 
                     b.ToTable("Rooms", "FPTDMS");
+                });
+
+            modelBuilder.Entity("DMS_API.Models.Domain.Service", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("BookingDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<Guid>("RoomId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ServiceName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RoomId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Services", "FPTDMS");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -499,6 +529,25 @@ namespace DMS_API.Migrations
                     b.Navigation("House");
                 });
 
+            modelBuilder.Entity("DMS_API.Models.Domain.Service", b =>
+                {
+                    b.HasOne("DMS_API.Models.Domain.Room", "Room")
+                        .WithMany("Services")
+                        .HasForeignKey("RoomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DMS_API.Models.Domain.AppUser", "User")
+                        .WithMany("Services")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Room");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
                     b.HasOne("DMS_API.Models.Domain.AppRole", null)
@@ -553,6 +602,8 @@ namespace DMS_API.Migrations
             modelBuilder.Entity("DMS_API.Models.Domain.AppUser", b =>
                 {
                     b.Navigation("Balance");
+
+                    b.Navigation("Services");
                 });
 
             modelBuilder.Entity("DMS_API.Models.Domain.Dorm", b =>
@@ -568,6 +619,11 @@ namespace DMS_API.Migrations
             modelBuilder.Entity("DMS_API.Models.Domain.House", b =>
                 {
                     b.Navigation("Rooms");
+                });
+
+            modelBuilder.Entity("DMS_API.Models.Domain.Room", b =>
+                {
+                    b.Navigation("Services");
                 });
 #pragma warning restore 612, 618
         }
