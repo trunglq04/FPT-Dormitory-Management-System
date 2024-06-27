@@ -22,10 +22,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 
 //builder.Services.AddAuthorization();
-builder.Services.AddControllers();
+//builder.Services.AddControllers();
 
 
-builder.Services.AddSwaggerGen();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -114,6 +113,8 @@ builder.Services.AddScoped<IDormRepository, DormRepository>();
 builder.Services.AddScoped<IFloorRepository, FloorRepository>();
 builder.Services.AddScoped<IHouseRepository, HouseRepository>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
 var mapperConfig = new MapperConfiguration(mc =>
 {
     mc.AddProfile(new MappingProfile());
@@ -162,7 +163,7 @@ app.UseRouting();
 //app.UseAuthentication();
 //app.UseAuthorization();
 
-app.MapControllers();
+//app.MapControllers();
 
 // app.MapFallbackToFile("index.html");
 
@@ -172,7 +173,7 @@ app.MapGet("api/foo", () =>
 })
     .RequireAuthorization("api");
 
-//app.MapGroup("api/auth")
-//    .MapIdentityApi<AppUser>();
+app.MapGroup("api/auth")
+    .MapIdentityApi<AppUser>();
 
 app.Run();
