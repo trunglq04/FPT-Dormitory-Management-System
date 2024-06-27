@@ -22,8 +22,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 
 //builder.Services.AddAuthorization();
-builder.Services.AddControllers();
 
+builder.Services.AddControllers();
 
 builder.Services.AddSwaggerGen();
 builder.Services.AddEndpointsApiExplorer();
@@ -31,7 +31,6 @@ builder.Services.AddSwaggerGen();
 
 //builder.Services.AddIdentityApiEndpoints<AppUser>()
 //    .AddEntityFrameworkStores<ApplicationDbContext>();
-
 
 builder.Services.AddIdentity<AppUser, AppRole>(options =>
 {
@@ -49,9 +48,7 @@ builder.Services.AddIdentity<AppUser, AppRole>(options =>
     .AddRoles<AppRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddApiEndpoints(); // support for login, register, logout, etc.
-
                         //.AddDefaultTokenProviders()
-
 
 
 builder.Services.AddAuthentication()
