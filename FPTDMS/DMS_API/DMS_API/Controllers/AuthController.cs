@@ -1,5 +1,5 @@
 ﻿using DMS_API.Models.Domain;
-using DMS_API.Models.DTO;
+using DMS_API.Models.DTO.Request;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -9,7 +9,7 @@ using System.Text;
 
 namespace DMS_API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("test/api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
     {
@@ -27,7 +27,7 @@ namespace DMS_API.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterDTO model)
+        public async Task<IActionResult> Register([FromBody] RegisterRequestDTO model)
         {
             var user = new AppUser { UserName = model.Email, Email = model.Email };
             var result = await _userManager.CreateAsync(user, model.Password);
@@ -45,7 +45,7 @@ namespace DMS_API.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDTO model)
+        public async Task<IActionResult> Login([FromBody] LoginRequestDTO model)
         {
             _logger.LogInformation("Login attempt for user: {Email}", model.Email);
 

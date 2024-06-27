@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace DMS_API.Models.DTO
+namespace DMS_API.Models.DTO.Request
 {
-    public class RegisterDTO
+    public class RegisterRequestDTO
     {
         [Required]
         [DataType(DataType.Text)]

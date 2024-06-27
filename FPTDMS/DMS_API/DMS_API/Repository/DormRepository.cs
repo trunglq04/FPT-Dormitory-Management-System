@@ -27,9 +27,9 @@ namespace DMS_API.Repository
 
                 return dorms;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                
+                Console.WriteLine(ex.Message);
                 return new List<Dorm>(); 
             }
         }
@@ -48,7 +48,7 @@ namespace DMS_API.Repository
             }
             catch (Exception ex)
             {
-               
+                Console.WriteLine(ex.Message);
                 return null; // Or handle it in another way that makes sense for your application
             }
         }
