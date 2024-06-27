@@ -12,6 +12,7 @@ using DMS_API.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
         throw new InvalidOperationException("Connection string 'ApplicationDbContextConnection' not found.");
@@ -21,7 +22,6 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 
 //builder.Services.AddAuthorization();
-
 
 builder.Services.AddControllers();
 
@@ -34,8 +34,13 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddIdentity<AppUser, AppRole>(options =>
 {
-    options.SignIn.RequireConfirmedAccount = false;
-    options.Lockout.AllowedForNewUsers = true; // Enables user lockout, to prevent brute - force attacks against user passwords
+    // No confirmation email required after register for the next login
+    options.SignIn.RequireConfirmedAccount = false; 
+    // Enables user lockout, to prevent brute - force attacks against user passwords
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+    options.Lockout.MaxFailedAccessAttempts = 5;
+    options.Lockout.AllowedForNewUsers = true; 
+    // Password settings
     options.Password.RequiredLength = 8;
     options.Password.RequireNonAlphanumeric = true;
     options.Password.RequireDigit = false;
@@ -110,6 +115,7 @@ var mapperConfig = new MapperConfiguration(mc =>
 {
     mc.AddProfile(new MappingProfile());
 });
+
 IMapper mapper = mapperConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
 #endregion
@@ -125,6 +131,10 @@ builder.Services.AddSingleton(mapper);
 //                   .AllowAnyHeader();
 //        });
 //});
+
+// Configure logging
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
 
 var app = builder.Build();
 
@@ -147,7 +157,7 @@ app.UseRouting();
 //app.UseCors("AllowAllOrigins");
 
 //app.UseAuthentication();
-app.UseAuthorization();
+//app.UseAuthorization();
 
 app.MapControllers();
 
@@ -159,7 +169,7 @@ app.MapGet("api/foo", () =>
 })
     .RequireAuthorization("api");
 
-app.MapGroup("api/auth")
-    .MapIdentityApi<AppUser>();
+//app.MapGroup("api/auth")
+//    .MapIdentityApi<AppUser>();
 
 app.Run();
