@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { User } from "../types/user";
+import { User } from "../app/models/user";
 import config from "../config";
 
 const UserList = () => {
