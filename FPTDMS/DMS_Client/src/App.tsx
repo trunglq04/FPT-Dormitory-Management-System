@@ -1,14 +1,12 @@
 import 'semantic-ui-css/semantic.min.css'
-import Register from '../components/Register'; 
-import { Container } from 'semantic-ui-react'
-
+import './App.css'
 
 function App() {
 
   return (
-    <Container>
-       <Register />
-    </Container>
+    <div className='App'>
+      <h1>Reactivities</h1>
+    </div>
   )
 }
 

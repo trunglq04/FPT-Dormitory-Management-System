@@ -11,6 +11,7 @@ namespace DMS_API.Models.Domain
         public string? Address { get; set; }
         public string? Description { get; set; }
         public string? Picture { get; set; }
+        public int? isCompletedInfo { get; set; } = 0;
 
         public Balance? Balance { get; set; }
         public ICollection<Service>? Services { get; set; }
