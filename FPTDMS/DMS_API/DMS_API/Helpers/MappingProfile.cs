@@ -7,7 +7,7 @@ namespace DMS_API.Helpers
 {
     public class MappingProfile : Profile
     {
-        public MappingProfile()
+        public MappingProfile() 
         {
             CreateMap<AppUser, AppUserDTO>();
             //Domain to DTO
