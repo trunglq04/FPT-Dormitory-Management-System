@@ -1,6 +1,8 @@
-import { useState } from "react";
-import { User } from "../app/models/user";
-import config from "../config";
+import { useEffect, useState } from "react";
+import config from "../../../config";
+import { User } from "../../models/user";
+import axios from "axios";
+
 
 const UserList = () => {
     const [users, setUsers] = useState<User[]>([]);
@@ -12,6 +14,10 @@ const UserList = () => {
     }
     
     fetchUsers();
+
+    useEffect(() => {
+        axios.get(`${config.baseApiUrl}/api/user`)
+    })
 
     return (
         <div>

@@ -27,7 +27,7 @@ namespace DMS_API.Repository
             _context = context;
             _userManager = userManager;
             _mapper = mapper;
-            Users = new UserRepository(_context, _userManager);
+            Users = new UserRepository(_context, _userManager, _mapper);
             Services = new ServiceRepository(_context);
             Dorms = new DormRepository(_context, _mapper);
             Floors = new FloorRepository(_context, _mapper);

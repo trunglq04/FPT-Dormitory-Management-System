@@ -167,7 +167,7 @@ namespace DMS_API.Migrations
                         {
                             Id = new Guid("8e445865-a24d-4543-a6c6-9443d048cdb9"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "c0f9a4b9-7e7c-411d-9741-8ddbf429393d",
+                            ConcurrencyStamp = "516ed81a-556a-4c0c-87b3-5fea2c12a041",
                             Email = "admin@fpt.vn",
                             EmailConfirmed = false,
                             FirstName = "Admin",
@@ -176,17 +176,17 @@ namespace DMS_API.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@FPT.VN",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEICbUsKjVbIN20rTx5DnbjTuJROFfFtNIFQVyr/fOS2g9e7oBHxi1LiCY0yGZEPDpA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEJfkbyC9DlZqFMXEqiA59zin7f5Xari9DHig4A5lXs6CEGHgZCbMje1a0tez8opoRw==",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
                             UserName = "admin",
-                            isCompletedInfo = 0
+                            isCompletedInfo = 1
                         },
                         new
                         {
                             Id = new Guid("1fb571fb-110d-438a-9ba8-9a2df842af6b"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "d523a28f-a599-45f3-9030-02ef7f957921",
+                            ConcurrencyStamp = "5c6ebadc-68c1-4025-987b-fba8ee3a42d3",
                             Email = "client@fpt.vn",
                             EmailConfirmed = false,
                             FirstName = "User",
@@ -195,11 +195,11 @@ namespace DMS_API.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "CLIENT@FPT.VN",
                             NormalizedUserName = "CLIENT",
-                            PasswordHash = "AQAAAAIAAYagAAAAEMDMQhQWfz4v3+bElMoGylFN4sVDLhZ/Em5qF3yRxMR44X7dUg8yyOb0GmcPV7YBMA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEFFGDqYtExnyUsOXWGSmz1NA0zKtrrlrsrknfAfOzT9evTwMdXN7giR4ROe5EF1JWQ==",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
                             UserName = "client",
-                            isCompletedInfo = 0
+                            isCompletedInfo = 1
                         });
                 });
 

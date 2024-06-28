@@ -45,6 +45,7 @@ namespace DMS_API.Migrations
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Description = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     Picture = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: true),
+                    isCompletedInfo = table.Column<int>(type: "int", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -63,6 +64,20 @@ namespace DMS_API.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Dorms",
+                schema: "FPTDMS",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Dorms", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -202,6 +217,108 @@ namespace DMS_API.Migrations
                         principalColumn: "Id");
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Floors",
+                schema: "FPTDMS",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DormId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Floors", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Floors_Dorms_DormId",
+                        column: x => x.DormId,
+                        principalSchema: "FPTDMS",
+                        principalTable: "Dorms",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Houses",
+                schema: "FPTDMS",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Capacity = table.Column<int>(type: "int", nullable: false),
+                    FloorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Houses", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Houses_Floors_FloorId",
+                        column: x => x.FloorId,
+                        principalSchema: "FPTDMS",
+                        principalTable: "Floors",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Rooms",
+                schema: "FPTDMS",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Capacity = table.Column<int>(type: "int", nullable: false),
+                    HouseId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Rooms", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Rooms_Houses_HouseId",
+                        column: x => x.HouseId,
+                        principalSchema: "FPTDMS",
+                        principalTable: "Houses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Services",
+                schema: "FPTDMS",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    BookingDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ServiceName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RoomId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Services", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Services_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "FPTDMS",
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Services_Rooms_RoomId",
+                        column: x => x.RoomId,
+                        principalSchema: "FPTDMS",
+                        principalTable: "Rooms",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
                 schema: "FPTDMS",
                 table: "AspNetRoles",
@@ -215,11 +332,11 @@ namespace DMS_API.Migrations
             migrationBuilder.InsertData(
                 schema: "FPTDMS",
                 table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "Address", "ConcurrencyStamp", "DateOfBirth", "Description", "Email", "EmailConfirmed", "FirstName", "Gender", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "Picture", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                columns: new[] { "Id", "AccessFailedCount", "Address", "ConcurrencyStamp", "DateOfBirth", "Description", "Email", "EmailConfirmed", "FirstName", "Gender", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "Picture", "SecurityStamp", "TwoFactorEnabled", "UserName", "isCompletedInfo" },
                 values: new object[,]
                 {
-                    { new Guid("1fb571fb-110d-438a-9ba8-9a2df842af6b"), 0, null, "1438be39-17b2-4a7e-837d-91711d6a0c83", null, null, "client@fpt.vn", false, "User", "Female", "Normal", false, null, "CLIENT@FPT.VN", "CLIENT", "AQAAAAIAAYagAAAAEO4L0e+o0VhyrOOfWHsONQsqfnb92g1ODZRnS76g2N4ow8zbeSuBuPSt49jjLY2YDw==", null, false, null, null, false, "client" },
-                    { new Guid("8e445865-a24d-4543-a6c6-9443d048cdb9"), 0, null, "765e3db1-94d5-460c-99b7-456db1b52437", null, null, "admin@fpt.vn", false, "Admin", "Male", "Admin", false, null, "ADMIN@FPT.VN", "ADMIN", "AQAAAAIAAYagAAAAEG8qbgs1B/kbXO4AgMh1Smg6NtvwEuKOaDpp0CRYma6EwOxfYrvRqmG7TfQt3Y8aLg==", null, false, null, null, false, "admin" }
+                    { new Guid("1fb571fb-110d-438a-9ba8-9a2df842af6b"), 0, null, "5c6ebadc-68c1-4025-987b-fba8ee3a42d3", null, null, "client@fpt.vn", false, "User", "Female", "Normal", false, null, "CLIENT@FPT.VN", "CLIENT", "AQAAAAIAAYagAAAAEFFGDqYtExnyUsOXWGSmz1NA0zKtrrlrsrknfAfOzT9evTwMdXN7giR4ROe5EF1JWQ==", null, false, null, null, false, "client", 1 },
+                    { new Guid("8e445865-a24d-4543-a6c6-9443d048cdb9"), 0, null, "516ed81a-556a-4c0c-87b3-5fea2c12a041", null, null, "admin@fpt.vn", false, "Admin", "Male", "Admin", false, null, "ADMIN@FPT.VN", "ADMIN", "AQAAAAIAAYagAAAAEJfkbyC9DlZqFMXEqiA59zin7f5Xari9DHig4A5lXs6CEGHgZCbMje1a0tez8opoRw==", null, false, null, null, false, "admin", 1 }
                 });
 
             migrationBuilder.InsertData(
@@ -295,6 +412,36 @@ namespace DMS_API.Migrations
                 column: "UserId",
                 unique: true,
                 filter: "[UserId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Floors_DormId",
+                schema: "FPTDMS",
+                table: "Floors",
+                column: "DormId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Houses_FloorId",
+                schema: "FPTDMS",
+                table: "Houses",
+                column: "FloorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Rooms_HouseId",
+                schema: "FPTDMS",
+                table: "Rooms",
+                column: "HouseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Services_RoomId",
+                schema: "FPTDMS",
+                table: "Services",
+                column: "RoomId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Services_UserId",
+                schema: "FPTDMS",
+                table: "Services",
+                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -325,11 +472,31 @@ namespace DMS_API.Migrations
                 schema: "FPTDMS");
 
             migrationBuilder.DropTable(
+                name: "Services",
+                schema: "FPTDMS");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles",
                 schema: "FPTDMS");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers",
+                schema: "FPTDMS");
+
+            migrationBuilder.DropTable(
+                name: "Rooms",
+                schema: "FPTDMS");
+
+            migrationBuilder.DropTable(
+                name: "Houses",
+                schema: "FPTDMS");
+
+            migrationBuilder.DropTable(
+                name: "Floors",
+                schema: "FPTDMS");
+
+            migrationBuilder.DropTable(
+                name: "Dorms",
                 schema: "FPTDMS");
         }
     }

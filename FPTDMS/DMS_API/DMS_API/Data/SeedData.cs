@@ -50,7 +50,8 @@ namespace DMS_API.Data
                     Gender = "Male",
                     Email = "admin@fpt.vn",
                     NormalizedEmail = "ADMIN@FPT.VN",
-                    PasswordHash = hasher.HashPassword(null, "@Admin123")
+                    PasswordHash = hasher.HashPassword(null, "@Admin123"),
+                    isCompletedInfo = 1
                 },
                 new AppUser
                 {
@@ -62,7 +63,8 @@ namespace DMS_API.Data
                     Gender = "Female",
                     Email = "client@fpt.vn",
                     NormalizedEmail = "CLIENT@FPT.VN",
-                    PasswordHash = hasher.HashPassword(null, "@Client123")
+                    PasswordHash = hasher.HashPassword(null, "@Client123"),
+                    isCompletedInfo = 1
                 }
             );
 

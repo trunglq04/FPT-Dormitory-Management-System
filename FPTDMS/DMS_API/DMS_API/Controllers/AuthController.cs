@@ -1,5 +1,6 @@
 ﻿using DMS_API.Models.Domain;
 using DMS_API.Models.DTO.Request;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -11,6 +12,7 @@ namespace DMS_API.Controllers
 {
     [Route("test/api/[controller]")]
     [ApiController]
+    [Authorize]
     public class AuthController : ControllerBase
     {
         private readonly UserManager<AppUser> _userManager;
@@ -25,7 +27,7 @@ namespace DMS_API.Controllers
             _configuration = configuration;
             _logger = logger;
         }
-
+        [AllowAnonymous]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequestDTO model)
         {
@@ -43,7 +45,7 @@ namespace DMS_API.Controllers
             }
             return BadRequest(ModelState);
         }
-
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestDTO model)
         {
