@@ -117,9 +117,9 @@ var mapperConfig = new MapperConfiguration(mc =>
 {
     mc.AddProfile(new MappingProfile());
 });
-
 IMapper mapper = mapperConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
+
 #endregion
 //builder.Services.AddSingleton<IMyService, MyService>();
 
@@ -161,7 +161,7 @@ app.UseRouting();
 //app.UseAuthentication();
 //app.UseAuthorization();
 
-//app.MapControllers();
+app.MapControllers();
 
 // app.MapFallbackToFile("index.html");
 
@@ -173,5 +173,7 @@ app.MapGet("api/foo", () =>
 
 app.MapGroup("api/auth")
     .MapIdentityApi<AppUser>();
+
+app.UseAuthorization();
 
 app.Run();

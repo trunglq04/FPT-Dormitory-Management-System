@@ -1,5 +1,8 @@
+using AutoMapper;
 using DMS_API.DataAccess;
+using DMS_API.Helpers;
 using DMS_API.Models.Domain;
+using DMS_API.Models.DTO.Request;
 using DMS_API.Repository.Interface;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -10,11 +13,13 @@ namespace DMS_API.Repository
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<AppUser> _userManager;
+        private readonly IMapper _mapper;
 
-        public UserRepository(ApplicationDbContext context, UserManager<AppUser> userManager) : base(context)
+        public UserRepository(ApplicationDbContext context, UserManager<AppUser> userManager, IMapper mapper) : base(context)
         {
             _context = context;
             _userManager = userManager;
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<AppUser>> GetAllUsersAsync()
@@ -32,9 +37,19 @@ namespace DMS_API.Repository
             return await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
         }
 
-        public Task<AppUser?> UpdateUserAsync(AppUser user)
+        public async Task UpdateUserAsync(Guid id, UpdateUserRequestDTO updateRequest)
         {
-            throw new NotImplementedException();
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
+            {
+                throw new KeyNotFoundException("User not found");
+            }
+            _mapper.Map(updateRequest, user);
+            
+            await _userManager.UpdateAsync(user);
+           
+            await _context.SaveChangesAsync();
         }
+
     }
 }

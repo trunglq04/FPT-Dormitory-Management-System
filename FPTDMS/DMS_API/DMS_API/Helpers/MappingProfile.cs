@@ -10,17 +10,20 @@ namespace DMS_API.Helpers
         public MappingProfile() 
         {
             CreateMap<AppUser, AppUserDTO>();
-            //Domain to DTO
-            CreateMap<Dorm, DormDTO>().ReverseMap();
-            CreateMap<Floor, FloorDTO>().ReverseMap();
-            CreateMap<House, HouseDTO>().ReverseMap();
-            CreateMap<Room, RoomDTO>().ReverseMap();
+            
+
+            //Domain to DTO and reverse
+            CreateMap<Dorm, DormDTO>();
+            CreateMap<Floor, FloorDTO>();
+            CreateMap<House, HouseDTO>();
+            CreateMap<Room, RoomDTO>();
 
             //Request DTOs
-            CreateMap<AddFloorRequestDTO, Floor>().ReverseMap();
-            CreateMap<UpdateFloorRequestDTO, Floor>().ReverseMap();
-            CreateMap<AddHouseRequestDTO, House>().ReverseMap();
-            CreateMap<UpdateHouseRequestDTO, House>().ReverseMap();
+            CreateMap<AddFloorRequestDTO, Floor>();
+            CreateMap<UpdateFloorRequestDTO, Floor>();
+            CreateMap<AddHouseRequestDTO, House>();
+            CreateMap<UpdateHouseRequestDTO, House>();
+            CreateMap<UpdateUserRequestDTO, AppUser>();
         }
     }
 }
