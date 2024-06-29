@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using AutoMapper;
 using DMS_API.Helpers;
+using DMS_API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -89,8 +90,45 @@ builder.Services.AddAuthorizationBuilder()
         policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
     });
 
+
+
+builder.Services.AddCors(opt =>
+{
+    opt.AddPolicy("CorsPolicy", policy =>
+    {
+        policy
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials()
+            .WithOrigins("http://localhost:3003");
+    });
+});
+
+#region Authentication
+
+//builder.Services.AddAuthentication(options =>
+//{
+//    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+//    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+//})
+//    .AddJwtBearer(options =>
+//    {
+//        options.TokenValidationParameters = new TokenValidationParameters
+//        {
+//            ValidateIssuer = true,
+//            ValidateAudience = true,
+//            ValidateLifetime = true,
+//            ValidateIssuerSigningKey = true,
+//            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+//            ValidAudience = builder.Configuration["Jwt:Audience"],
+//            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? string.Empty))
+//        };
+//    });
+
+=======
 builder.Services.AddAuthentication()
         .AddIdentityServerJwt();
+
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
@@ -119,6 +157,7 @@ builder.Services.AddScoped<IDormRepository, DormRepository>();
 builder.Services.AddScoped<IFloorRepository, FloorRepository>();
 builder.Services.AddScoped<IHouseRepository, HouseRepository>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 var mapperConfig = new MapperConfiguration(mc =>
@@ -166,6 +205,10 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseCors("CorsPolicy");
+// app.MapFallbackToFile("index.html");
+
 
 app.MapGet("api/foo", () =>
 {
