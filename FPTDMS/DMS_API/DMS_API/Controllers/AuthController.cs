@@ -57,34 +57,75 @@ namespace DMS_API.Controllers
 
 
 
+=======
+        //[AllowAnonymous]
+        //[HttpPost("login")]
+        //public async Task<IActionResult> Login([FromBody] LoginRequestDTO model)
+        //{
+        //    _logger.LogInformation("Login attempt for user: {Email}", model.Email);
+
+        //     Support both Email and Username for login
+        //    var user = await _userManager.FindByEmailAsync(model.Email) ?? await _userManager.FindByNameAsync(model.Email);
+
+        //    if (user == null)
+        //    {
+        //        _logger.LogWarning("User not found: {Email}", model.Email);
+        //        return Unauthorized(new { Error = "Invalid username or password" });    // Status code 401
+        //    }
+
+        //     Changed to verify the password manually
+        //    _logger.LogInformation("User found: {Email}", model.Email);
+        //    var isPasswordValid = await _userManager.CheckPasswordAsync(user, model.Password);
+        //    if (!isPasswordValid)
+        //    {
+        //        _logger.LogWarning("Invalid password for user: {Email}", model.Email);
+        //        return Unauthorized(new { Error = "Invalid username or password" });    // Status code 401
+        //    }
+
+        //    _logger.LogInformation("Password verified for user: {Email}", model.Email);
+        //    var token = GenerateJwtToken(user);
+        //    return Ok(new { access_token = token });
+        //}
+
+
         [AllowAnonymous]
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestDTO model)
         {
-            _logger.LogInformation("Login attempt for user: {Email}", model.Email);
-
-            // Support both Email and Username for login
-            var user = await _userManager.FindByEmailAsync(model.Email) ?? await _userManager.FindByNameAsync(model.Email);
-
-            if (user == null)
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
             {
-                _logger.LogWarning("User not found: {Email}", model.Email);
-                return Unauthorized(new { Error = "Invalid username or password" });    // Status code 401
-            }
+                var userRoles = await _userManager.GetRolesAsync(user);
 
-            // Changed to verify the password manually
-            _logger.LogInformation("User found: {Email}", model.Email);
-            var isPasswordValid = await _userManager.CheckPasswordAsync(user, model.Password);
-            if (!isPasswordValid)
-            {
-                _logger.LogWarning("Invalid password for user: {Email}", model.Email);
-                return Unauthorized(new { Error = "Invalid username or password" });    // Status code 401
-            }
+                var authClaims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.Email!),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                };
 
-            _logger.LogInformation("Password verified for user: {Email}", model.Email);
-            var token = GenerateJwtToken(user);
-            return Ok(new { access_token = token });
+                foreach (var userRole in userRoles)
+                {
+                    authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+                }
+
+                var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"] ?? string.Empty));
+
+                var token = new JwtSecurityToken(
+                    issuer: _configuration["JWT:ValidIssuer"],
+                    audience: _configuration["JWT:ValidAudience"],
+                    expires: DateTime.Now.AddHours(3),
+                    claims: authClaims,
+                    signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+                    );
+
+                return Ok(new
+                {
+                    token = new JwtSecurityTokenHandler().WriteToken(token),
+                    expiration = token.ValidTo
+                });
+            }
+            return Unauthorized();
         }
 
         //Forgot password
@@ -173,7 +214,7 @@ namespace DMS_API.Controllers
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]?? string.Empty));
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Secret"] ?? string.Empty));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
