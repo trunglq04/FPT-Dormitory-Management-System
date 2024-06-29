@@ -5,6 +5,7 @@ using DMS_API.Repository.Interface;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using AutoMapper;
@@ -47,42 +48,49 @@ builder.Services.AddIdentity<AppUser, AppRole>(options =>
 })
     .AddRoles<AppRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddApiEndpoints(); // support for login, register, logout, etc.
-                        //.AddDefaultTokenProviders()
+    //.AddDefaultTokenProviders()
+    .AddApiEndpoints(); 
+// support for login, register, logout, etc.
+                        
 
 
-builder.Services.AddAuthentication()
-  .AddBearerToken(IdentityConstants.BearerScheme);
+//builder.Services.AddAuthentication()
+//  .AddBearerToken(IdentityConstants.BearerScheme);
+
+#region Authentication
+
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+    .AddJwtBearer(options =>
+    {
+        options.SaveToken = true;
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            SaveSigninToken = true,
+            ValidateLifetime = true,
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"] ?? string.Empty))
+        };
+    });
 
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("api", policy =>
     {
         policy.RequireAuthenticatedUser();
-        policy.AddAuthenticationSchemes(IdentityConstants.BearerScheme);
+        policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
     });
 
-
-#region Authentication
-
-//builder.Services.AddAuthentication(options =>
-//{
-//    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-//    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-//})
-//    .AddJwtBearer(options =>
-//    {
-//        options.TokenValidationParameters = new TokenValidationParameters
-//        {
-//            ValidateIssuer = true,
-//            ValidateAudience = true,
-//            ValidateLifetime = true,
-//            ValidateIssuerSigningKey = true,
-//            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-//            ValidAudience = builder.Configuration["Jwt:Audience"],
-//            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? string.Empty))
-//        };
-//    });
-
+builder.Services.AddAuthentication()
+        .AddIdentityServerJwt();
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
@@ -94,10 +102,10 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.Password.RequiredLength = 6;
     options.Password.RequiredUniqueChars = 1;
 
-    // Lockout settings.
-    //options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-    //options.Lockout.MaxFailedAccessAttempts = 5;
-    //options.Lockout.AllowedForNewUsers = true;
+    //Lockout settings.
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+    options.Lockout.MaxFailedAccessAttempts = 5;
+    options.Lockout.AllowedForNewUsers = true;
 
     // User settings.
     options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
@@ -121,6 +129,7 @@ IMapper mapper = mapperConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
 
 #endregion
+
 //builder.Services.AddSingleton<IMyService, MyService>();
 
 //builder.Services.AddCors(options =>
@@ -134,9 +143,6 @@ builder.Services.AddSingleton(mapper);
 //        });
 //});
 
-// Configure logging
-builder.Logging.ClearProviders();
-builder.Logging.AddConsole();
 
 var app = builder.Build();
 
@@ -151,19 +157,15 @@ else
    app.UseExceptionHandler("/Error");
 };
 
-//app.UseDefaultFiles();
+app.UseDefaultFiles();
 app.UseStaticFiles();
 
 app.UseRouting();
-//app.UseHttpsRedirection();
-//app.UseCors("AllowAllOrigins");
 
-//app.UseAuthentication();
-//app.UseAuthorization();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
-
-// app.MapFallbackToFile("index.html");
 
 app.MapGet("api/foo", () =>
 {
@@ -173,7 +175,5 @@ app.MapGet("api/foo", () =>
 
 app.MapGroup("api/auth")
     .MapIdentityApi<AppUser>();
-
-app.UseAuthorization();
 
 app.Run();
