@@ -54,10 +54,6 @@ namespace DMS_API.Controllers
             return BadRequest(ModelState);
         }
 
-
-
-
-=======
         //[AllowAnonymous]
         //[HttpPost("login")]
         //public async Task<IActionResult> Login([FromBody] LoginRequestDTO model)
