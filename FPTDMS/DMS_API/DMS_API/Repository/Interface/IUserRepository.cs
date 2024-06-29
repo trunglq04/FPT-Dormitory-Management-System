@@ -1,4 +1,5 @@
 using DMS_API.Models.Domain;
+using DMS_API.Models.DTO.Request;
 
 namespace DMS_API.Repository.Interface
 {
@@ -7,6 +8,6 @@ namespace DMS_API.Repository.Interface
         Task<List<string>?> GetRoleAsync(AppUser user);
         Task<IEnumerable<AppUser>> GetAllUsersAsync();
         Task<AppUser?> GetUserByIdAsync(Guid userId);
-        Task<AppUser?> UpdateUserAsync(AppUser user);
+        Task UpdateUserAsync(Guid id, UpdateUserRequestDTO updateRequest);
     }
 }
