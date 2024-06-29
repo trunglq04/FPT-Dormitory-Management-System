@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using AutoMapper;
 using DMS_API.Helpers;
+using DMS_API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,6 +63,18 @@ builder.Services.AddAuthorizationBuilder()
     });
 
 
+builder.Services.AddCors(opt =>
+{
+    opt.AddPolicy("CorsPolicy", policy =>
+    {
+        policy
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials()
+            .WithOrigins("http://localhost:3003");
+    });
+});
+
 #region Authentication
 
 //builder.Services.AddAuthentication(options =>
@@ -111,6 +124,7 @@ builder.Services.AddScoped<IDormRepository, DormRepository>();
 builder.Services.AddScoped<IFloorRepository, FloorRepository>();
 builder.Services.AddScoped<IHouseRepository, HouseRepository>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 var mapperConfig = new MapperConfiguration(mc =>
 {
     mc.AddProfile(new MappingProfile());
@@ -160,7 +174,7 @@ app.UseRouting();
 //app.UseAuthorization();
 
 app.MapControllers();
-
+app.UseCors("CorsPolicy");
 // app.MapFallbackToFile("index.html");
 
 app.MapGet("api/foo", () =>
