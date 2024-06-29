@@ -26,6 +26,7 @@ namespace DMS_API.Controllers
 
         // GET: api/User
         [HttpGet]
+        //[Authorize("api")]
         public async Task<ActionResult<IEnumerable<AppUserDTO>>> GetAllUsers()
         {
             var users = await _unitOfWork.Users.GetAllUsersAsync();
@@ -34,7 +35,7 @@ namespace DMS_API.Controllers
                 return NotFound();
 
             var userDTOs = _mapper.Map<List<AppUserDTO>>(users);
-            return Ok(users);
+            return Ok(userDTOs);
         }
 
         // GET: api/User/{id}
