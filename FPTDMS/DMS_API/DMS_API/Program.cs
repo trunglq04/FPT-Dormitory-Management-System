@@ -22,16 +22,11 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
        options.UseSqlServer(connectionString));
 
 
-//builder.Services.AddAuthorization();
-
-
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-//builder.Services.AddIdentityApiEndpoints<AppUser>()
-//    .AddEntityFrameworkStores<ApplicationDbContext>();
 
 builder.Services.AddIdentity<AppUser, AppRole>(options =>
 {
@@ -156,7 +151,5 @@ app.MapGet("api/foo", () =>
 })
     .RequireAuthorization("api");
 
-app.MapGroup("api/auth")
-    .MapIdentityApi<AppUser>();
 
 app.Run();

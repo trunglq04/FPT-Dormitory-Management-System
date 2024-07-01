@@ -51,7 +51,7 @@ namespace DMS_API.Data
                     Email = "admin@fpt.vn",
                     NormalizedEmail = "ADMIN@FPT.VN",
                     PasswordHash = hasher.HashPassword(null, "@Admin123"),
-                    isCompletedInfo = 1
+                    LockoutEnabled = false
                 },
                 new AppUser
                 {
@@ -64,7 +64,6 @@ namespace DMS_API.Data
                     Email = "client@fpt.vn",
                     NormalizedEmail = "CLIENT@FPT.VN",
                     PasswordHash = hasher.HashPassword(null, "@Client123"),
-                    isCompletedInfo = 1
                 }
             );
 

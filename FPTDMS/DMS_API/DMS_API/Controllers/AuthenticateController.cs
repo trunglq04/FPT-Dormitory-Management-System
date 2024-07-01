@@ -5,14 +5,16 @@ using DMS_API.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace DMS_API.Controllers
 {
-    [Route("/api/[controller]")]
+    [Route("/api/auth")]
     [ApiController]
     public class AuthenticateController : ControllerBase
     {
@@ -22,7 +24,6 @@ namespace DMS_API.Controllers
         private readonly ILogger<AuthenticateController> _logger;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEmailService _emailService;
-
 
         public AuthenticateController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager,
             IConfiguration configuration, ILogger<AuthenticateController> logger, IUnitOfWork unitOfWork, IEmailService emailService)
@@ -39,7 +40,18 @@ namespace DMS_API.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequestDTO model)
         {
-            var user = new AppUser { UserName = model.Email, Email = model.Email };
+            string emailPattern = @"^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$";
+            if (!Regex.IsMatch(model.Email, emailPattern))
+                ModelState.AddModelError("erros", "Invalid email format");
+            // ADD: Check password strength
+            var userName = model.Email.Split('@')[0];
+            
+
+            var user = new AppUser { 
+                UserName = userName, 
+                Email = model.Email,
+                LockoutEnabled = true
+            };
             var result = await _userManager.CreateAsync(user, model.Password);
 
             if (result.Succeeded)
@@ -49,79 +61,73 @@ namespace DMS_API.Controllers
 
             foreach (var error in result.Errors)
             {
-                ModelState.AddModelError("", error.Description);
+                ModelState.AddModelError("erros", error.Description);
             }
             return BadRequest(ModelState);
         }
 
-        //[AllowAnonymous]
-        //[HttpPost("login")]
-        //public async Task<IActionResult> Login([FromBody] LoginRequestDTO model)
-        //{
-        //    _logger.LogInformation("Login attempt for user: {Email}", model.Email);
-
-        //     Support both Email and Username for login
-        //    var user = await _userManager.FindByEmailAsync(model.Email) ?? await _userManager.FindByNameAsync(model.Email);
-
-        //    if (user == null)
-        //    {
-        //        _logger.LogWarning("User not found: {Email}", model.Email);
-        //        return Unauthorized(new { Error = "Invalid username or password" });    // Status code 401
-        //    }
-
-        //     Changed to verify the password manually
-        //    _logger.LogInformation("User found: {Email}", model.Email);
-        //    var isPasswordValid = await _userManager.CheckPasswordAsync(user, model.Password);
-        //    if (!isPasswordValid)
-        //    {
-        //        _logger.LogWarning("Invalid password for user: {Email}", model.Email);
-        //        return Unauthorized(new { Error = "Invalid username or password" });    // Status code 401
-        //    }
-
-        //    _logger.LogInformation("Password verified for user: {Email}", model.Email);
-        //    var token = GenerateJwtToken(user);
-        //    return Ok(new { access_token = token });
-        //}
-
-
         [AllowAnonymous]
-
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestDTO model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
-            {
-                var userRoles = await _userManager.GetRolesAsync(user);
 
-                var authClaims = new List<Claim>
+            if (user != null)
+            {   
+                var lockoutEndDate = await _userManager.GetLockoutEndDateAsync(user);
+                bool isLockoutEnd = lockoutEndDate == null || lockoutEndDate < DateTimeOffset.Now;
+
+                if (await _userManager.CheckPasswordAsync(user, model.Password) && isLockoutEnd)
                 {
-                    new Claim(ClaimTypes.Name, user.Email!),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                };
+                    var userRoles = await _userManager.GetRolesAsync(user);
+                    string? fullName = null;
+                    // if first name and last name are null, then assign the value of UserName to fullName
+                    if (user.FirstName != null || user.LastName != null)
+                    {   
+                        fullName = user.FirstName + " " + user.LastName;
+                    }
 
-                foreach (var userRole in userRoles)
-                {
-                    authClaims.Add(new Claim(ClaimTypes.Role, userRole));
-                }
+                    var authClaims = new List<Claim>();
+                    authClaims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
+                    authClaims.Add(new Claim(ClaimTypes.Name, fullName ?? user.UserName!));
+                    foreach (var userRole in userRoles)
+                    {
+                        authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+                    }
 
-                var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"] ?? string.Empty));
+                    var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"] ?? string.Empty));
 
-                var token = new JwtSecurityToken(
-                    issuer: _configuration["JWT:ValidIssuer"],
-                    audience: _configuration["JWT:ValidAudience"],
-                    expires: DateTime.Now.AddHours(3),
-                    claims: authClaims,
-                    signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+                    var token = new JwtSecurityToken(
+                        issuer: _configuration["JWT:ValidIssuer"],
+                        audience: _configuration["JWT:ValidAudience"],
+                        expires: DateTime.Now.AddHours(1),
+                        claims: authClaims,
+                        signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
                     );
 
-                return Ok(new
+                    var refreshToken = new RefreshToken
+                    {
+                        Id = Guid.NewGuid(),
+                        Token = Guid.NewGuid().ToString(),  
+                        UserId = user.Id,
+                        ExpiryDate = DateTime.UtcNow.AddDays(1),
+                        IsRevoked = false
+                    };
+
+                    return Ok(new
+                    {
+                        access_token = new JwtSecurityTokenHandler().WriteToken(token),
+                        expiration = token.ValidTo,
+                        refresh_token = refreshToken.Token,
+                    });
+                }
+                else if (user.LockoutEnabled == true)
                 {
-                    token = new JwtSecurityTokenHandler().WriteToken(token),
-                    expiration = token.ValidTo
-                });
+                    user.AccessFailedCount++;
+                    return await addLockoutEnd(user);
+                }
             }
-            return Unauthorized();
+            return Unauthorized("Please check your Email or Password");
         }
 
         //Forgot password
@@ -199,8 +205,6 @@ namespace DMS_API.Controllers
             return Ok("Password has been reset successfully.");
         }
 
-
-
         private string GenerateJwtToken(AppUser user)
         {
             var claims = new[]
@@ -222,6 +226,33 @@ namespace DMS_API.Controllers
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        private async Task<IActionResult> addLockoutEnd(AppUser user)
+        {
+            var accessFailedCount = user.AccessFailedCount;
+            if (accessFailedCount < 3)
+            {
+                return Unauthorized("Please check your Email or Password again!");
+            }
+            if (accessFailedCount == 3)
+            {
+                var lockoutEnd = DateTimeOffset.Now.AddMinutes(5);
+                await _userManager.SetLockoutEndDateAsync(user, lockoutEnd);
+                return Unauthorized($"You attempts fail {accessFailedCount}, your account is locked 5 minutes");
+            }
+            else if (accessFailedCount == 5)
+            {
+                var lockoutEnd = DateTimeOffset.Now.AddMinutes(10);
+                await _userManager.SetLockoutEndDateAsync(user, lockoutEnd);
+                return Unauthorized($"You attempts fail {accessFailedCount}, your account is locked 10 minutes");
+            }
+            else 
+            {
+                var lockoutEnd = DateTimeOffset.Now.AddMinutes(15);
+                await _userManager.SetLockoutEndDateAsync(user, lockoutEnd);
+                return Unauthorized($"You attempts fail {accessFailedCount}, your account is locked 15 minutes");
+            }
         }
 
     }
