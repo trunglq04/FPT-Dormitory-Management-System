@@ -147,6 +147,9 @@ namespace DMS_API.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
+                    b.Property<int?>("isCompletedInfo")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("NormalizedEmail")
@@ -173,16 +176,17 @@ namespace DMS_API.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@FPT.VN",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEDidWV8/dumdyLITvsHRcQOOJLur3aUI3J938syo6xc+60MJOWdMZvTZ3J0ONx57+Q==",
+                            PasswordHash = "AQAAAAIAAYagAAAAELFBpQ4wFsbf+twDuBY0BsUIghYB5QbjXwQzfoJijcaGpqweBbHcMM7SF2KgI+oKyw==",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
-                            UserName = "admin"
+                            UserName = "admin",
+                            isCompletedInfo = 1
                         },
                         new
                         {
                             Id = new Guid("1fb571fb-110d-438a-9ba8-9a2df842af6b"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "c019a12a-9483-4745-84d8-ac39811a892c",
+                            ConcurrencyStamp = "4c1b2c38-a647-4496-9e17-d04b51581118",
                             Email = "client@fpt.vn",
                             EmailConfirmed = false,
                             FirstName = "User",
@@ -191,10 +195,11 @@ namespace DMS_API.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "CLIENT@FPT.VN",
                             NormalizedUserName = "CLIENT",
-                            PasswordHash = "AQAAAAIAAYagAAAAEJP0Czeh19Dom4Xq868GIHaNcfaEI06Xid8C88tzc4h87Xj0I0pCdVnjZ/7WNoVh1A==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEEY37jN7yIRX8svxUcvthvBcJJjQK2GXObYho0D4F2xWJegsEAkfNDbaYoBVb7PGuw==",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
-                            UserName = "client"
+                            UserName = "client",
+                            isCompletedInfo = 1
                         });
                 });
 
@@ -270,6 +275,7 @@ namespace DMS_API.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Type")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");

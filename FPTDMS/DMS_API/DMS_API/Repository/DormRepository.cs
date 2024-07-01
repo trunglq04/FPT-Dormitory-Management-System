@@ -23,6 +23,7 @@ namespace DMS_API.Repository
                      .Include(d => d.Floors)
                         .ThenInclude(f => f.Houses)
                             .ThenInclude(h => h.Rooms)
+                            .AsSplitQuery()
                     .ToListAsync();
 
                 return dorms;

@@ -24,9 +24,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 //builder.Services.AddAuthorization();
 
+
 builder.Services.AddControllers();
 
-builder.Services.AddSwaggerGen();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -117,7 +117,7 @@ builder.Services.Configure<IdentityOptions>(options =>
     options.User.RequireUniqueEmail = true;
 });
 #endregion
-
+ 
 #region Repositories DI
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IDormRepository, DormRepository>();
@@ -125,13 +125,16 @@ builder.Services.AddScoped<IFloorRepository, FloorRepository>();
 builder.Services.AddScoped<IHouseRepository, HouseRepository>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IVNPayService, VNPayService>();
+
 var mapperConfig = new MapperConfiguration(mc =>
 {
     mc.AddProfile(new MappingProfile());
 });
-
 IMapper mapper = mapperConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
+
 #endregion
 //builder.Services.AddSingleton<IMyService, MyService>();
 
@@ -183,7 +186,9 @@ app.MapGet("api/foo", () =>
 })
     .RequireAuthorization("api");
 
-//app.MapGroup("api/auth")
-//    .MapIdentityApi<AppUser>();
+app.MapGroup("api/auth")
+    .MapIdentityApi<AppUser>();
+
+app.UseAuthorization();
 
 app.Run();

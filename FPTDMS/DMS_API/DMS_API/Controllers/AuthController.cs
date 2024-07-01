@@ -1,7 +1,9 @@
-﻿using DMS_API.Models.Domain;
+﻿
+using DMS_API.Models.Domain;
 using DMS_API.Models.DTO.Request;
-using DMS_API.Repository.Interface;
 using DMS_API.Services;
+using Microsoft.AspNetCore.Authorization;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -19,21 +21,18 @@ namespace DMS_API.Controllers
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IConfiguration _configuration;
         private readonly ILogger<AuthController> _logger;
-        private readonly IUnitOfWork _unitOfWork;
         private readonly IEmailService _emailService;
 
 
         public AuthController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager,
-            IConfiguration configuration, ILogger<AuthController> logger, IUnitOfWork unitOfWork, IEmailService emailService)
+            IConfiguration configuration, ILogger<AuthController> logger, IEmailService emailService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
-            _unitOfWork = unitOfWork;
             _emailService = emailService;
             _logger = logger;
         }
-
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequestDTO model)
         {
@@ -51,7 +50,6 @@ namespace DMS_API.Controllers
             }
             return BadRequest(ModelState);
         }
-
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestDTO model)
