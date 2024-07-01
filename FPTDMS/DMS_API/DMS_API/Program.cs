@@ -5,7 +5,6 @@ using DMS_API.Repository.Interface;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using AutoMapper;
@@ -50,13 +49,13 @@ builder.Services.AddIdentity<AppUser, AppRole>(options =>
     .AddRoles<AppRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     //.AddDefaultTokenProviders()
-    .AddApiEndpoints(); 
+    .AddApiEndpoints();
 // support for login, register, logout, etc.
-                        
 
 
-//builder.Services.AddAuthentication()
-//  .AddBearerToken(IdentityConstants.BearerScheme);
+
+builder.Services.AddAuthentication()
+  .AddBearerToken(IdentityConstants.BearerScheme);
 
 #region Authentication
 
@@ -83,12 +82,12 @@ builder.Services.AddAuthentication(options =>
         };
     });
 
-builder.Services.AddAuthorizationBuilder()
-    .AddPolicy("api", policy =>
-    {
-        policy.RequireAuthenticatedUser();
-        policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
-    });
+//builder.Services.AddAuthorizationBuilder()
+//    .AddPolicy("api", policy =>
+//    {
+//        policy.RequireAuthenticatedUser();
+//        policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
+//    });
 
 
 
@@ -104,51 +103,7 @@ builder.Services.AddCors(opt =>
     });
 });
 
-#region Authentication
 
-//builder.Services.AddAuthentication(options =>
-//{
-//    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-//    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-//})
-//    .AddJwtBearer(options =>
-//    {
-//        options.TokenValidationParameters = new TokenValidationParameters
-//        {
-//            ValidateIssuer = true,
-//            ValidateAudience = true,
-//            ValidateLifetime = true,
-//            ValidateIssuerSigningKey = true,
-//            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-//            ValidAudience = builder.Configuration["Jwt:Audience"],
-//            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? string.Empty))
-//        };
-//    });
-
-=======
-builder.Services.AddAuthentication()
-        .AddIdentityServerJwt();
-
-
-builder.Services.Configure<IdentityOptions>(options =>
-{
-    // Password settings.
-    options.Password.RequireDigit = true;
-    options.Password.RequireLowercase = true;
-    options.Password.RequireNonAlphanumeric = true;
-    options.Password.RequireUppercase = true;
-    options.Password.RequiredLength = 6;
-    options.Password.RequiredUniqueChars = 1;
-
-    //Lockout settings.
-    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-    options.Lockout.MaxFailedAccessAttempts = 5;
-    options.Lockout.AllowedForNewUsers = true;
-
-    // User settings.
-    options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-    options.User.RequireUniqueEmail = true;
-});
 #endregion
 
 #region Repositories DI
@@ -168,19 +123,6 @@ IMapper mapper = mapperConfig.CreateMapper();
 builder.Services.AddSingleton(mapper);
 
 #endregion
-
-//builder.Services.AddSingleton<IMyService, MyService>();
-
-//builder.Services.AddCors(options =>
-//{
-//    options.AddPolicy("AllowAllOrigins",
-//        builder =>
-//        {
-//            builder.AllowAnyOrigin()
-//                   .AllowAnyMethod()
-//                   .AllowAnyHeader();
-//        });
-//});
 
 
 var app = builder.Build();
@@ -207,8 +149,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.UseCors("CorsPolicy");
-// app.MapFallbackToFile("index.html");
-
 
 app.MapGet("api/foo", () =>
 {
