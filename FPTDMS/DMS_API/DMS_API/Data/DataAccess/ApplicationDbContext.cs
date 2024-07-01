@@ -23,6 +23,7 @@ namespace DMS_API.DataAccess
      
         // public DbSet<Payment> Payments { get; set; }
         public DbSet<Balance> Balances {get; set;}
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
 
         public void Configure(EntityTypeBuilder<AppUser> builder)
         {
@@ -40,6 +41,12 @@ namespace DMS_API.DataAccess
             SeedData.Seed(modelBuilder);
 
             // Configure relationships
+
+            modelBuilder.Entity<AppUser>()
+                .HasOne(u => u.RefreshToken) 
+                .WithOne(rt => rt.User) 
+                .HasForeignKey<RefreshToken>(rt => rt.UserId);
+
 
             modelBuilder.Entity<Dorm>()
                 .HasMany(d => d.Floors)
