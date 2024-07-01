@@ -12,21 +12,20 @@ using System.Text;
 
 namespace DMS_API.Controllers
 {
-    [Route("test/api/[controller]")]
+    [Route("/api/[controller]")]
     [ApiController]
-    [Authorize]
-    public class AuthController : ControllerBase
+    public class AuthenticateController : ControllerBase
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly IConfiguration _configuration;
-        private readonly ILogger<AuthController> _logger;
+        private readonly ILogger<AuthenticateController> _logger;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEmailService _emailService;
 
 
-        public AuthController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager,
-            IConfiguration configuration, ILogger<AuthController> logger, IUnitOfWork unitOfWork, IEmailService emailService)
+        public AuthenticateController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager,
+            IConfiguration configuration, ILogger<AuthenticateController> logger, IUnitOfWork unitOfWork, IEmailService emailService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -35,6 +34,7 @@ namespace DMS_API.Controllers
             _emailService = emailService;
             _logger = logger;
         }
+
         [AllowAnonymous]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequestDTO model)
