@@ -107,7 +107,6 @@ builder.Services.AddScoped<IDormRepository, DormRepository>();
 builder.Services.AddScoped<IFloorRepository, FloorRepository>();
 builder.Services.AddScoped<IHouseRepository, HouseRepository>();
 builder.Services.AddScoped<IRoomRepository, RoomRepository>();
-builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 var mapperConfig = new MapperConfiguration(mc =>
@@ -119,6 +118,10 @@ builder.Services.AddSingleton(mapper);
 
 #endregion
 
+#region Services DI
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<VNPayService, VNPayService>();
+#endregion
 
 var app = builder.Build();
 
