@@ -41,21 +41,26 @@ namespace DMS_API.Controllers
         public async Task<IActionResult> Register([FromBody] RegisterRequestDTO model)
         {
             string emailPattern = @"^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$";
+            var roleName = "Client";
+
             if (!Regex.IsMatch(model.Email, emailPattern))
                 ModelState.AddModelError("erros", "Invalid email format");
             // ADD: Check password strength
             var userName = model.Email.Split('@')[0];
             
 
-            var user = new AppUser { 
+            var user = new AppUser()
+            { 
                 UserName = userName, 
                 Email = model.Email,
                 LockoutEnabled = true
             };
             var result = await _userManager.CreateAsync(user, model.Password);
 
+
             if (result.Succeeded)
             {
+                await _userManager.AddToRoleAsync(user, roleName);
                 return Ok(new { Message = "User registered successfully" });
             }
 
@@ -100,7 +105,7 @@ namespace DMS_API.Controllers
                     var token = new JwtSecurityToken(
                         issuer: _configuration["JWT:ValidIssuer"],
                         audience: _configuration["JWT:ValidAudience"],
-                        expires: DateTime.Now.AddHours(1),
+                        expires: DateTime.Now.AddMinutes(20),
                         claims: authClaims,
                         signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
                     );
@@ -150,7 +155,8 @@ namespace DMS_API.Controllers
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
             // Send OTP via email
-            await _emailService.SendEmailAsync(model.Email, "Reset Password OTP", $"Your OTP for password reset is {otp}.");
+            await _emailService.SendEmailAsync(model.Email, 
+                "Reset Password OTP", $"Your OTP for password reset is {otp}.");
 
             return Ok("OTP has been sent to your email.");
         }
