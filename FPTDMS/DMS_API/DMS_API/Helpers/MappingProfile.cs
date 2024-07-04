@@ -17,6 +17,8 @@ namespace DMS_API.Helpers
             CreateMap<Floor, FloorDTO>();
             CreateMap<House, HouseDTO>();
             CreateMap<Room, RoomDTO>();
+            CreateMap<AppUser, AppUserDTO>();
+            CreateMap<Balance, BalanceDTO>();
 
             //Request DTOs
             CreateMap<AddFloorRequestDTO, Floor>();

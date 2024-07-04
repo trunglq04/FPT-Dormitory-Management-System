@@ -18,5 +18,6 @@ namespace DMS_API.Models.Domain
         public Balance? Balance { get; set; }
         public ICollection<Service>? Services { get; set; }
         public virtual RefreshToken RefreshToken { get; set; }
+        public ICollection<Order>? Orders { get; set; }
     }
 }
