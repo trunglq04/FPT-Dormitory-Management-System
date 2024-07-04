@@ -1,4 +1,6 @@
-﻿using DMS_API.VNPay;
+﻿using DMS_API.Models.Domain;
+using DMS_API.Repository.Interface;
+using DMS_API.VNPay;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -14,12 +16,32 @@ namespace DMS_API.Services
     public class VNPayService : IVNPayService
     {
         IConfiguration _config;
-        public VNPayService(IConfiguration config) {
+        private readonly IUnitOfWork _unitOfWork;
+        public VNPayService(IConfiguration config, IUnitOfWork unitOfWork) {
             _config = config;
+            _unitOfWork = unitOfWork;
         }
-        public string CreatePaymentURL(HttpContext context, VnPaymentRequest model)
+        public async Task<string> CreatePaymentURLAsync(HttpContext context, VnPaymentRequest model)
         {
             var tick = DateTime.Now.Ticks.ToString();
+
+            // Create a new Order object
+            var order = new Order
+            {
+                Id = Guid.NewGuid(),
+                UserId = model.OrderId,           // Assign the user ID from the input model to the order
+                OrderReference = tick,
+                Amount = (float)model.Amount,
+                CreatedDate = model.CreatedDate,
+                Status = "Pending"
+            };
+
+            // Add the new order to the database through the Unit of Work pattern
+            await _unitOfWork.Orders.AddAsync(order);
+
+            // Save the changes to the database, persisting the new order
+            await _unitOfWork.SaveChanges();
+
             var vnpay = new VnPayLibrary();
             vnpay.AddRequestData("vnp_Version", _config["VnPay:vnp_Version"]);
             vnpay.AddRequestData("vnp_Command", _config["VnPay:vnp_Command"]);
@@ -34,7 +56,7 @@ namespace DMS_API.Services
             vnpay.AddRequestData("vnp_CurrCode", _config["VnPay:vnp_CurrCode"]);
             vnpay.AddRequestData("vnp_IpAddr", Utils.GetIpAddress(context));
             vnpay.AddRequestData("vnp_Locale", _config["VnPay:Locale"]);
-            vnpay.AddRequestData("vnp_OrderInfo", _config["VnPay:vnp_OrderInfo"] + $" {model.OrderId}");
+            vnpay.AddRequestData("vnp_OrderInfo", _config["VnPay:vnp_OrderInfo"] + $" {model.Description}");
             vnpay.AddRequestData("vnp_OrderType", "other"); //default value: other
             vnpay.AddRequestData("vnp_ReturnUrl", _config["VnPay:vnp_ReturnUrl"]);
             vnpay.AddRequestData("vnp_TxnRef", tick);
@@ -86,6 +108,30 @@ namespace DMS_API.Services
                     Amount = float.Parse(vnp_Amount)
                 };
             }
+        }
+
+        public async Task<bool> UpdateUserBalance(Guid userId, float amount)
+        {
+            var balance = await _unitOfWork.Balances.GetByUserIdAsync(userId);
+            if (balance == null)
+            {
+                // Create a new balance entry if it doesn't exist
+                balance = new Balance
+                {
+                    UserId = userId,
+                    Amount = amount
+                };
+                await _unitOfWork.Balances.AddAsync(balance);
+            }
+            else
+            {
+                // Update the existing balance
+                balance.Amount += amount;
+                await _unitOfWork.Balances.UpdateBalanceAsync(balance);
+            }
+
+            await _unitOfWork.SaveChanges();
+            return true;
         }
     }
 }

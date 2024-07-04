@@ -11,6 +11,6 @@
         public string Token { get; set; }
         public string VnPayResponseCode { get; set; }
         public string OrderInfo { get; set; }
-        public double Amount { get; set; }
+        public float Amount { get; set; }
     }
 }
