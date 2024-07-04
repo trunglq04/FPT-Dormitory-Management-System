@@ -22,6 +22,8 @@ namespace DMS_API.Repository
         public IHouseRepository Houses { get; set; }
 
         public IRoomRepository Rooms { get; set; }
+        public IBalanceRepository Balances { get; set; }
+        public IOrderRepository Orders { get; set; }
         public UnitOfWork(ApplicationDbContext context, UserManager<AppUser> userManager, IMapper mapper)
         {
             _context = context;
@@ -33,6 +35,8 @@ namespace DMS_API.Repository
             Floors = new FloorRepository(_context, _mapper);
             Houses = new HouseRepository(_context, _mapper);
             Rooms = new RoomRepository(_context, _mapper);
+            Balances = new BalanceRepository(_context);
+            Orders = new OrderRepository(_context);
         }
 
         public async Task SaveChanges()

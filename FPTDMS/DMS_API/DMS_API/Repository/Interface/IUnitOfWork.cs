@@ -8,6 +8,8 @@ namespace DMS_API.Repository.Interface
         IFloorRepository Floors {get; }
         IHouseRepository Houses {get; }
         IRoomRepository Rooms {get; }
+        IBalanceRepository Balances { get; }
+        IOrderRepository Orders { get; }
         Task SaveChanges();
     }
 }

@@ -120,7 +120,7 @@ builder.Services.AddSingleton(mapper);
 
 #region Services DI
 builder.Services.AddScoped<IEmailService, EmailService>();
-builder.Services.AddScoped<VNPayService, VNPayService>();
+builder.Services.AddScoped<IVNPayService, VNPayService>();
 #endregion
 
 var app = builder.Build();

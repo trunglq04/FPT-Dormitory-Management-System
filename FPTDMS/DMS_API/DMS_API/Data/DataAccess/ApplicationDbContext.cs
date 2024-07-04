@@ -20,8 +20,9 @@ namespace DMS_API.DataAccess
         public DbSet<Floor> Floors { get; set; }
         public DbSet<Room> Rooms { get; set; }
         public DbSet<Service> Services { get; set; }
-     
+
         // public DbSet<Payment> Payments { get; set; }
+        public DbSet<Order> Order { get; set; }
         public DbSet<Balance> Balances {get; set;}
         public DbSet<RefreshToken> RefreshTokens { get; set; }
 
@@ -74,6 +75,12 @@ namespace DMS_API.DataAccess
                 .HasOne(b => b.Room)
                 .WithMany(r => r.Services)
                 .HasForeignKey(b => b.RoomId);
+
+            //Order - User (One-to-Many)
+            modelBuilder.Entity<Order>()
+           .HasOne(o => o.User)
+           .WithMany(u => u.Orders) 
+           .HasForeignKey(o => o.UserId);
 
             // Specify precision for decimal properties
             modelBuilder.Entity<Service>()
