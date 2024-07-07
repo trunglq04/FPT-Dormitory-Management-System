@@ -15,13 +15,15 @@ namespace DMS_API.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
+        private readonly UserManager<AppUser> _userManager;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         
-        public UserController(IUnitOfWork unitOfWork, IMapper mapper)
+        public UserController(IUnitOfWork unitOfWork, IMapper mapper, UserManager<AppUser> userManager)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _userManager = userManager;
         }
 
         // GET: api/User
@@ -56,6 +58,25 @@ namespace DMS_API.Controllers
         {
             await _unitOfWork.Users.UpdateUserAsync(id, updateUser);
             return Ok("Succesfully Update User!");
+        }
+
+        //POST CompleteProfile
+        [HttpPost("{id}/CompleteProfile")]
+        public async Task<ActionResult> AddOrUpdateProfileInfoAsync(Guid id, AddProfileInfoRequestDTO profileInfo)
+        {
+            var user = await _unitOfWork.Users.GetUserByIdAsync(id);
+            if (user == null)
+                return NotFound("User not found");
+
+            _mapper.Map(profileInfo, user);
+            var result = await _userManager.UpdateAsync(user);
+
+            if (!result.Succeeded)
+            {
+                return BadRequest("Failed to update user profile");
+            }
+
+            return Ok("Profile information updated successfully");
         }
     }
 }

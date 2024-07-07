@@ -26,6 +26,7 @@ namespace DMS_API.Helpers
             CreateMap<AddHouseRequestDTO, House>();
             CreateMap<UpdateHouseRequestDTO, House>();
             CreateMap<UpdateUserRequestDTO, AppUser>();
+            CreateMap<AddProfileInfoRequestDTO, AppUser>();
         }
     }
 }
