@@ -2,7 +2,6 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import 'semantic-ui-css/semantic.min.css'
 import HomePage from '../components/home/Home'
 import LoginPage from '../components/auth/Login'
-import RegisterPage from '../components/auth/Signup'
 import ProtectedRoutes from '../utils/ProtectedRoutes'
 
 function App() {
