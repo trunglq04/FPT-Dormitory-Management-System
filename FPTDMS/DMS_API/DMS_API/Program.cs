@@ -94,7 +94,7 @@ builder.Services.AddCors(opt =>
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials()
-            .WithOrigins("http://localhost:3003");
+            .WithOrigins("http://localhost:3344");
     });
 });
 
