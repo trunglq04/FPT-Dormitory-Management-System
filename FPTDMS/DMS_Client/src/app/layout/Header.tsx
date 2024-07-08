@@ -1,7 +1,7 @@
 import { Button, Menu, Image, Container } from "semantic-ui-react";
 import { NavLink } from "react-router-dom";
  
-export default function NavBar() {  
+const Header = () => {  
   return(
     <Menu inverted fixed='top' >
         <Container inverted >
@@ -20,6 +20,8 @@ export default function NavBar() {
     </Menu>
   )
 }
+
+export default Header
 
 // const [show, setShow] = useState(false);
 

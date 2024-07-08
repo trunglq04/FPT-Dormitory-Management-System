@@ -1,27 +1,25 @@
-import { Outlet } from 'react-router-dom'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import 'semantic-ui-css/semantic.min.css'
-import { Container } from 'semantic-ui-react';
-import HomePage from '../components/home/HomePage';
+import 'bootstrap/dist/css/bootstrap.min.css'
+import HomePage from '../components/home/Home'
+import Login from '../components/auth/Login'
+import SignUp from '../components/auth/SignUp'
 
+import ProtectedRoutes from '../utils/ProtectedRoutes'
 
 function App() {
   // const location = useLocation();
 
-  return (
-    <>
-      {location.pathname === '/' ? <HomePage/> : (
-        <div>
-          <HomePage/>
-          <Container style={{ marginTop: "7em" }}>
-            {/* Renders the child route's element, if there is one. */}
-            <Outlet /> 
-          </Container>
-        </div>
-      )}
-    </>
-  );
+  return ( 
+    <BrowserRouter>
+      <Routes>
+        <Route element={<HomePage />} path="/" />
+        <Route element={<Login />} path="/login" />
+        <Route element={<SignUp />} path="/register" />
+        <Route element={<ProtectedRoutes />}></Route>
+      </Routes>
+    </BrowserRouter>
+  )
 }
 
 export default App
-
-
