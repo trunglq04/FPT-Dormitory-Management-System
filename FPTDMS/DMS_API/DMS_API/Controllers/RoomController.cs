@@ -41,6 +41,15 @@ namespace DMS_API.Controllers
             var roomDTO = _mapper.Map<RoomDTO>(room);
             return Ok(roomDTO);
         }
+
+        [HttpGet("GetRoomsByHouseId/{houseId}")]
+        public async Task<ActionResult<IEnumerable<RoomDTO>>> GetRoomsByHouseId(Guid houseId)
+        {
+            var rooms = await _unitOfWork.Rooms.GetAllAsync();
+            var roomsByHouseId = rooms.Where(r => r.HouseId == houseId).ToList();
+            var roomDTOs = _mapper.Map<List<RoomDTO>>(roomsByHouseId);
+            return Ok(roomDTOs);
+        }
         //PUT: api/Room/{id}
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateRoom(Guid id, UpdateRoomRequestDTO room)
@@ -67,6 +76,8 @@ namespace DMS_API.Controllers
             var roomDTO = _mapper.Map<RoomDTO>(room);
             return CreatedAtAction(nameof(GetRoomById), new { id = roomDTO.Id }, roomDTO);
         }
+
+
         //DELETE: api/Room/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRoom(Guid id)

@@ -164,7 +164,7 @@ namespace DMS_API.Migrations
                         {
                             Id = new Guid("8e445865-a24d-4543-a6c6-9443d048cdb9"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "f5d185f4-35cc-48f8-8425-19e101dff714",
+                            ConcurrencyStamp = "3bec36f4-f6e4-402a-8887-f95a5f64a757",
                             Email = "admin@fpt.vn",
                             EmailConfirmed = false,
                             FirstName = "Admin",
@@ -173,7 +173,7 @@ namespace DMS_API.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@FPT.VN",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAENol6H1fPkzJfXBH2RS+7xWQgFDNlM4vfYioayKQ6eBIeGYi5FToPgjzISytQSukmw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEI2UEFmyR0tgZSM5savP19fPUAOJYJWWGTYRx1u8120iHtTzKhjKp2BYTJC5QzD43Q==",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
                             UserName = "admin"
@@ -182,7 +182,7 @@ namespace DMS_API.Migrations
                         {
                             Id = new Guid("1fb571fb-110d-438a-9ba8-9a2df842af6b"),
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "c1f13ae2-63d3-42ef-a1e4-d9711d03e775",
+                            ConcurrencyStamp = "f3fcbb8e-55ee-4543-ba5e-56955d5ab6f9",
                             Email = "client@fpt.vn",
                             EmailConfirmed = false,
                             FirstName = "User",
@@ -191,7 +191,7 @@ namespace DMS_API.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "CLIENT@FPT.VN",
                             NormalizedUserName = "CLIENT",
-                            PasswordHash = "AQAAAAIAAYagAAAAELka5jWrmPxTxOd4Jd4sRbtvyjc2xdJm6OveAT9rmDJaLEjc4vj6YERS8hkFTscg9w==",
+                            PasswordHash = "AQAAAAIAAYagAAAAELQBJigtr/PST8C7MM0UfqwWdmUomBGlEOI30yKdF79Hu2v/98si7JxRsGHtXp1QkQ==",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
                             UserName = "client"
@@ -293,6 +293,9 @@ namespace DMS_API.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("DormId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<Guid>("FloorId")
                         .HasColumnType("uniqueidentifier");
 
@@ -306,9 +309,41 @@ namespace DMS_API.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DormId");
+
                     b.HasIndex("FloorId");
 
                     b.ToTable("Houses", "FPTDMS");
+                });
+
+            modelBuilder.Entity("DMS_API.Models.Domain.Order", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<float>("Amount")
+                        .HasColumnType("real");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("OrderReference")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Order", "FPTDMS");
                 });
 
             modelBuilder.Entity("DMS_API.Models.Domain.RefreshToken", b =>
@@ -529,7 +564,7 @@ namespace DMS_API.Migrations
                     b.HasOne("DMS_API.Models.Domain.Dorm", "Dorm")
                         .WithMany("Floors")
                         .HasForeignKey("DormId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Dorm");
@@ -537,13 +572,32 @@ namespace DMS_API.Migrations
 
             modelBuilder.Entity("DMS_API.Models.Domain.House", b =>
                 {
+                    b.HasOne("DMS_API.Models.Domain.Dorm", "Dorm")
+                        .WithMany("Houses")
+                        .HasForeignKey("DormId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
                     b.HasOne("DMS_API.Models.Domain.Floor", "Floor")
                         .WithMany("Houses")
                         .HasForeignKey("FloorId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Dorm");
+
+                    b.Navigation("Floor");
+                });
+
+            modelBuilder.Entity("DMS_API.Models.Domain.Order", b =>
+                {
+                    b.HasOne("DMS_API.Models.Domain.AppUser", "User")
+                        .WithMany("Orders")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Floor");
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DMS_API.Models.Domain.RefreshToken", b =>
@@ -562,7 +616,7 @@ namespace DMS_API.Migrations
                     b.HasOne("DMS_API.Models.Domain.House", "House")
                         .WithMany("Rooms")
                         .HasForeignKey("HouseId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("House");
@@ -642,6 +696,8 @@ namespace DMS_API.Migrations
                 {
                     b.Navigation("Balance");
 
+                    b.Navigation("Orders");
+
                     b.Navigation("RefreshToken")
                         .IsRequired();
 
@@ -651,6 +707,8 @@ namespace DMS_API.Migrations
             modelBuilder.Entity("DMS_API.Models.Domain.Dorm", b =>
                 {
                     b.Navigation("Floors");
+
+                    b.Navigation("Houses");
                 });
 
             modelBuilder.Entity("DMS_API.Models.Domain.Floor", b =>

@@ -33,6 +33,15 @@ namespace DMS_API.Controllers
             return Ok(floorDTOs);
         }
 
+        [HttpGet("GetFloorsByDormId/{dormId}")]
+        public async Task<ActionResult<IEnumerable<FloorDTO>>> GetFloorsByDormId(Guid dormId)
+        {
+            var floors = await _unitOfWork.Floors.GetAllAsync();
+            var floorsByDormId = floors.Where(f => f.DormId == dormId).ToList();
+            var floorDTOs = _mapper.Map<List<FloorDTO>>(floorsByDormId);
+            return Ok(floorDTOs);
+        }
+
         //GET floor by id
         [HttpGet("{id}")]
         public async Task<ActionResult<FloorDTO>> GetFloorbyId(Guid id)
@@ -46,7 +55,7 @@ namespace DMS_API.Controllers
             return Ok(floorDTO);
         }
         //ADD new floor
-        [HttpPost]
+        [HttpPost("Add-floor")]
         public async Task<ActionResult<AddFloorRequestDTO>> AddFloor(AddFloorRequestDTO addFloorRequest)
         {
             var floor = _mapper.Map<Floor>(addFloorRequest);
@@ -57,6 +66,7 @@ namespace DMS_API.Controllers
             var floorDTO = _mapper.Map<FloorDTO>(floor);
             return CreatedAtAction(nameof(GetFloorbyId), new { id = floorDTO.Id }, floorDTO);
         }
+
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateFloor(Guid id, UpdateFloorRequestDTO updateRequest)

@@ -52,17 +52,26 @@ namespace DMS_API.DataAccess
             modelBuilder.Entity<Dorm>()
                 .HasMany(d => d.Floors)
                 .WithOne(f => f.Dorm)
-                .HasForeignKey(f => f.DormId);
+                .HasForeignKey(f => f.DormId).OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Dorm>()
+               .HasMany(d => d.Houses)
+               .WithOne(h => h.Dorm)
+               .HasForeignKey(h => h.DormId).OnDelete(DeleteBehavior.NoAction);
+
 
             modelBuilder.Entity<Floor>()
                 .HasMany(f => f.Houses)
                 .WithOne(h => h.Floor)
-                .HasForeignKey(h => h.FloorId);
+                .HasForeignKey(h => h.FloorId).OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<House>()
                 .HasMany(h => h.Rooms)
                 .WithOne(r => r.House)
-                .HasForeignKey(r => r.HouseId);
+                .HasForeignKey(r => r.HouseId).OnDelete(DeleteBehavior.NoAction);
+
+
+
 
             // Service - User (One-to-Many)
             modelBuilder.Entity<Service>()

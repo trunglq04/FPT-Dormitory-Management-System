@@ -13,8 +13,8 @@ namespace DMS_API.Helpers
             
 
             //Domain to DTO and reverse
-            CreateMap<Dorm, DormDTO>();
-            CreateMap<Floor, FloorDTO>();
+            CreateMap<Dorm, DormDTO>().ReverseMap();
+            CreateMap<Floor, FloorDTO>().ReverseMap();
             CreateMap<House, HouseDTO>();
             CreateMap<Room, RoomDTO>();
             CreateMap<AppUser, AppUserDTO>();

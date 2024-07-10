@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DMS_API.Models.Domain;
 using DMS_API.Models.DTO;
 using DMS_API.Repository.Interface;
 using Microsoft.AspNetCore.Mvc;
@@ -27,6 +28,16 @@ namespace DMS_API.Controllers
             var dormDTOs = _mapper.Map<List<DormDTO>>(dorms);
             return Ok(dormDTOs);
         }
+
+        [HttpPost("create")]
+        public async Task<IActionResult> CreateDorm(DormDTO dormDTO)
+        {
+            var dorm = _mapper.Map<Dorm>(dormDTO);
+            await _unitOfWork.Dorms.AddAsync(dorm);
+            await _unitOfWork.SaveChanges();
+            return Ok(dormDTO);
+        }
+
 
         // GET: api/Dorm/{id}
         [HttpGet("{id}")]

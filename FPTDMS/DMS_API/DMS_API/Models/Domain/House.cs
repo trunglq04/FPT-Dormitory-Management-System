@@ -8,7 +8,10 @@
         public string Status { get; set; }
         public int Capacity { get; set; }
         public Guid FloorId { get; set; }
+        public Guid DormId { get; set; }
 
+
+        public Dorm Dorm { get; set; }
         public Floor Floor { get; set; }
         public ICollection<Room> Rooms { get; set; }
     }

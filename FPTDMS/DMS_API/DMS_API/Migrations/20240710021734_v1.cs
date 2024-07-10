@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DMS_API.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialDB : Migration
+    public partial class v1 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -45,7 +45,6 @@ namespace DMS_API.Migrations
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Description = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
                     Picture = table.Column<string>(type: "nvarchar(40)", maxLength: 40, nullable: true),
-                    isCompletedInfo = table.Column<int>(type: "int", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -218,6 +217,53 @@ namespace DMS_API.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Order",
+                schema: "FPTDMS",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    OrderReference = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Amount = table.Column<float>(type: "real", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Order", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Order_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "FPTDMS",
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RefreshTokens",
+                schema: "FPTDMS",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Token = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ExpiryDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsRevoked = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RefreshTokens", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RefreshTokens_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "FPTDMS",
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Floors",
                 schema: "FPTDMS",
                 columns: table => new
@@ -236,8 +282,7 @@ namespace DMS_API.Migrations
                         column: x => x.DormId,
                         principalSchema: "FPTDMS",
                         principalTable: "Dorms",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -250,18 +295,24 @@ namespace DMS_API.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Capacity = table.Column<int>(type: "int", nullable: false),
-                    FloorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
+                    FloorId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    DormId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Houses", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_Houses_Dorms_DormId",
+                        column: x => x.DormId,
+                        principalSchema: "FPTDMS",
+                        principalTable: "Dorms",
+                        principalColumn: "Id");
+                    table.ForeignKey(
                         name: "FK_Houses_Floors_FloorId",
                         column: x => x.FloorId,
                         principalSchema: "FPTDMS",
                         principalTable: "Floors",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -283,8 +334,7 @@ namespace DMS_API.Migrations
                         column: x => x.HouseId,
                         principalSchema: "FPTDMS",
                         principalTable: "Houses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -332,11 +382,11 @@ namespace DMS_API.Migrations
             migrationBuilder.InsertData(
                 schema: "FPTDMS",
                 table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "Address", "ConcurrencyStamp", "DateOfBirth", "Description", "Email", "EmailConfirmed", "FirstName", "Gender", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "Picture", "SecurityStamp", "TwoFactorEnabled", "UserName", "isCompletedInfo" },
+                columns: new[] { "Id", "AccessFailedCount", "Address", "ConcurrencyStamp", "DateOfBirth", "Description", "Email", "EmailConfirmed", "FirstName", "Gender", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "Picture", "SecurityStamp", "TwoFactorEnabled", "UserName" },
                 values: new object[,]
                 {
-                    { new Guid("1fb571fb-110d-438a-9ba8-9a2df842af6b"), 0, null, "5c6ebadc-68c1-4025-987b-fba8ee3a42d3", null, null, "client@fpt.vn", false, "User", "Female", "Normal", false, null, "CLIENT@FPT.VN", "CLIENT", "AQAAAAIAAYagAAAAEFFGDqYtExnyUsOXWGSmz1NA0zKtrrlrsrknfAfOzT9evTwMdXN7giR4ROe5EF1JWQ==", null, false, null, null, false, "client", 1 },
-                    { new Guid("8e445865-a24d-4543-a6c6-9443d048cdb9"), 0, null, "516ed81a-556a-4c0c-87b3-5fea2c12a041", null, null, "admin@fpt.vn", false, "Admin", "Male", "Admin", false, null, "ADMIN@FPT.VN", "ADMIN", "AQAAAAIAAYagAAAAEJfkbyC9DlZqFMXEqiA59zin7f5Xari9DHig4A5lXs6CEGHgZCbMje1a0tez8opoRw==", null, false, null, null, false, "admin", 1 }
+                    { new Guid("1fb571fb-110d-438a-9ba8-9a2df842af6b"), 0, null, "f3fcbb8e-55ee-4543-ba5e-56955d5ab6f9", null, null, "client@fpt.vn", false, "User", "Female", "Normal", false, null, "CLIENT@FPT.VN", "CLIENT", "AQAAAAIAAYagAAAAELQBJigtr/PST8C7MM0UfqwWdmUomBGlEOI30yKdF79Hu2v/98si7JxRsGHtXp1QkQ==", null, false, null, null, false, "client" },
+                    { new Guid("8e445865-a24d-4543-a6c6-9443d048cdb9"), 0, null, "3bec36f4-f6e4-402a-8887-f95a5f64a757", null, null, "admin@fpt.vn", false, "Admin", "Male", "Admin", false, null, "ADMIN@FPT.VN", "ADMIN", "AQAAAAIAAYagAAAAEI2UEFmyR0tgZSM5savP19fPUAOJYJWWGTYRx1u8120iHtTzKhjKp2BYTJC5QzD43Q==", null, false, null, null, false, "admin" }
                 });
 
             migrationBuilder.InsertData(
@@ -420,10 +470,29 @@ namespace DMS_API.Migrations
                 column: "DormId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Houses_DormId",
+                schema: "FPTDMS",
+                table: "Houses",
+                column: "DormId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Houses_FloorId",
                 schema: "FPTDMS",
                 table: "Houses",
                 column: "FloorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Order_UserId",
+                schema: "FPTDMS",
+                table: "Order",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RefreshTokens_UserId",
+                schema: "FPTDMS",
+                table: "RefreshTokens",
+                column: "UserId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Rooms_HouseId",
@@ -469,6 +538,14 @@ namespace DMS_API.Migrations
 
             migrationBuilder.DropTable(
                 name: "Balances",
+                schema: "FPTDMS");
+
+            migrationBuilder.DropTable(
+                name: "Order",
+                schema: "FPTDMS");
+
+            migrationBuilder.DropTable(
+                name: "RefreshTokens",
                 schema: "FPTDMS");
 
             migrationBuilder.DropTable(

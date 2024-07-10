@@ -30,6 +30,34 @@ namespace DMS_API.Controllers
             return Ok(houseDTOs);
         }
 
+        [HttpGet("GetHousesByDormId/{dormId}")]
+        public async Task<ActionResult<IEnumerable<HouseDTO>>> GetHousesByDormId(Guid dormId)
+        {
+            var houses = await _unitOfWork.Houses.GetAllAsync();
+            var housesByDormId = houses.Where(h => h.DormId == dormId).ToList();
+            var houseDTOs = _mapper.Map<List<HouseDTO>>(housesByDormId);
+            return Ok(houseDTOs);
+        }
+
+        [HttpGet("GetHousesByFloorId/{floorId}")]
+        public async Task<ActionResult<IEnumerable<HouseDTO>>> GetHousesByFloorId(Guid floorId)
+        {
+            var houses = await _unitOfWork.Houses.GetAllAsync();
+            var housesByFloorId = houses.Where(h => h.FloorId == floorId).ToList();
+            var houseDTOs = _mapper.Map<List<HouseDTO>>(housesByFloorId);
+            return Ok(houseDTOs);
+        }
+
+        [HttpGet("GetHousesByDormIdAndFloorId")]
+        public async Task<ActionResult<IEnumerable<HouseDTO>>> GetHousesByDormIdAndFloorId(Guid dormId, Guid floorId)
+        {
+            var houses = await _unitOfWork.Houses.GetAllAsync();
+            var housesByDormIdAndFloorId = houses.Where(h => h.DormId == dormId && h.FloorId == floorId).ToList();
+            var houseDTOs = _mapper.Map<List<HouseDTO>>(housesByDormIdAndFloorId);
+            return Ok(houseDTOs);
+        }
+
+
         //GET house by id
         [HttpGet("{id}")]
         public async Task<ActionResult<HouseDTO>> GetHouseById(Guid id)
@@ -42,6 +70,7 @@ namespace DMS_API.Controllers
             var houseDTO = _mapper.Map<HouseDTO>(house);
             return Ok(houseDTO);
         }
+
 
         [HttpPost]
         public async Task<ActionResult<AddHouseRequestDTO>> AddHouse(AddHouseRequestDTO addHouseRequest)

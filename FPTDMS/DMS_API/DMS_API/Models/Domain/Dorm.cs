@@ -8,5 +8,6 @@
 
         //  Navigation properties
         public ICollection<Floor> Floors { get; set; }
+        public ICollection<House> Houses { get; set; }
     }
 }
