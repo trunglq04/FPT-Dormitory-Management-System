@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Form, Button, Col, Row, Container } from 'react-bootstrap';
 import axios, { AxiosError } from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
-// import { Profile } from '../models/Profile';
+import { Profile } from '../../models/Profile';
 
 const CompleteProfilePage: React.FC = () => {
     const { id } = useParams<{ id: string }>(); // Ensure id is correctly typed
