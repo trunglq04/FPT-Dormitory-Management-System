@@ -24,6 +24,7 @@ using DMS_API.Repository.Interface;
             var floors = await _context.Floors
                 .Include(f => f.Dorm)  // Include the Dorm
                 .Include(f => f.Houses) // Include the Houses
+                .AsSplitQuery()
                 .ToListAsync();
 
             return floors;
@@ -34,6 +35,7 @@ using DMS_API.Repository.Interface;
             var floor = await _context.Floors
                 .Include(f => f.Dorm)  // Include the Dorm
                 .Include(f => f.Houses) // Include the Houses
+                .AsSplitQuery()
                 .FirstOrDefaultAsync(f => f.Id == id);
 
             return floor;

@@ -1,4 +1,4 @@
-﻿using DMS_API.Models.Domain;
+﻿﻿using DMS_API.Models.Domain;
 using DMS_API.Models.DTO.Request;
 using DMS_API.Repository.Interface;
 using DMS_API.Services;
@@ -36,7 +36,6 @@ namespace DMS_API.Controllers
             _logger = logger;
         }
 
-        [AllowAnonymous]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequestDTO model)
         {
@@ -53,6 +52,7 @@ namespace DMS_API.Controllers
             { 
                 UserName = userName, 
                 Email = model.Email,
+                Balance = new Balance { Amount = 0 },
                 LockoutEnabled = true
             };
             var result = await _userManager.CreateAsync(user, model.Password);
@@ -61,7 +61,7 @@ namespace DMS_API.Controllers
             if (result.Succeeded)
             {
                 await _userManager.AddToRoleAsync(user, roleName);
-                return Ok(new { Message = "User registered successfully" });
+                return Ok(new { Message = "User registered successfully", UserId = user.Id });
             }
 
             foreach (var error in result.Errors)
@@ -71,14 +71,14 @@ namespace DMS_API.Controllers
             return BadRequest(ModelState);
         }
 
-        [AllowAnonymous]
+
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestDTO model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
 
             if (user != null)
-            {   
+            {
                 var lockoutEndDate = await _userManager.GetLockoutEndDateAsync(user);
                 bool isLockoutEnd = lockoutEndDate == null || lockoutEndDate < DateTimeOffset.Now;
 
@@ -86,9 +86,8 @@ namespace DMS_API.Controllers
                 {
                     var userRoles = await _userManager.GetRolesAsync(user);
                     string? fullName = null;
-                    // if first name and last name are null, then assign the value of UserName to fullName
                     if (user.FirstName != null || user.LastName != null)
-                    {   
+                    {
                         fullName = user.FirstName + " " + user.LastName;
                     }
 
@@ -113,7 +112,7 @@ namespace DMS_API.Controllers
                     var refreshToken = new RefreshToken
                     {
                         Id = Guid.NewGuid(),
-                        Token = Guid.NewGuid().ToString(),  
+                        Token = Guid.NewGuid().ToString(),
                         UserId = user.Id,
                         ExpiryDate = DateTime.UtcNow.AddDays(1),
                         IsRevoked = false
@@ -121,6 +120,7 @@ namespace DMS_API.Controllers
 
                     return Ok(new
                     {
+                        user_id = user.Id, // Include the user ID in the response
                         access_token = new JwtSecurityTokenHandler().WriteToken(token),
                         expiration = token.ValidTo,
                         refresh_token = refreshToken.Token,
@@ -135,6 +135,7 @@ namespace DMS_API.Controllers
             return Unauthorized("Please check your Email or Password");
         }
 
+
         //Forgot password
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword(ForgotPasswordRequestDTO model)
@@ -147,7 +148,7 @@ namespace DMS_API.Controllers
 
             // Generate OTP (One-Time Password)
             var otp = new Random().Next(100000, 999999).ToString(); // Example: Generate a 6-digit OTP
-            var expirationTime = DateTime.UtcNow.AddMinutes(15); // OTP expires in 15 minutes
+            var expirationTime = DateTime.UtcNow.AddMinutes(5); // OTP expires in 15 minutes
 
             // Save OTP and expiration time to database or in-memory cache
             // Example: user.OTP = otp; user.OTPExpirationTime = expirationTime; await _userManager.UpdateAsync(user);
