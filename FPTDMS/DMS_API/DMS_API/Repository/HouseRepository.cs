@@ -25,6 +25,7 @@ namespace DMS_API.Repository
             var houses = await _context.Houses
                   .Include(h => h.Floor)  // Include the Floor
                 .Include(h => h.Rooms)  // Include the Rooms
+                .AsSplitQuery()
                 .ToListAsync();
 
             return houses;
@@ -35,6 +36,7 @@ namespace DMS_API.Repository
             var house = await _context.Houses
                   .Include(h => h.Floor)  // Include the Floor
                 .Include(h => h.Rooms)  // Include the Rooms
+                .AsSplitQuery()
                 .FirstOrDefaultAsync(h => h.Id == id);
 
             return house;

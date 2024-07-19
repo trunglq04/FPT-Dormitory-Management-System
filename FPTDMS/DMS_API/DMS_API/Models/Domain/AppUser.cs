@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 
 namespace DMS_API.Models.Domain
 {
@@ -19,5 +20,6 @@ namespace DMS_API.Models.Domain
         public ICollection<Service>? Services { get; set; }
         public virtual RefreshToken RefreshToken { get; set; }
         public ICollection<Order>? Orders { get; set; }
+        public ICollection<Booking>? Bookings { get; set; } 
     }
 }

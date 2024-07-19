@@ -10,6 +10,9 @@ namespace DMS_API.Repository.Interface
         IRoomRepository Rooms {get; }
         IBalanceRepository Balances { get; }
         IOrderRepository Orders { get; }
+        IBookingRepository Bookings { get; }
+        IServiceRepository Services { get; }
+
         Task SaveChanges();
     }
 }

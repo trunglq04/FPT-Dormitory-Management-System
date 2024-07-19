@@ -13,6 +13,7 @@
         public string? Description { get; set; }
         public string? Picture { get; set; }
         public string? PhoneNumber { get; set; }
-        public bool IsCompletedInfor { get; }
+        public BalanceDTO? Balance { get; set; }
+
     }
 }

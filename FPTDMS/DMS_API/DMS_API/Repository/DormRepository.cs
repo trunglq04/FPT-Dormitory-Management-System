@@ -19,12 +19,7 @@ namespace DMS_API.Repository
         {
             try
             {
-                var dorms = await _context.Dorms
-                     .Include(d => d.Floors)
-                        .ThenInclude(f => f.Houses)
-                            .ThenInclude(h => h.Rooms)
-                    .ToListAsync();
-
+                var dorms = await _context.Dorms.AsSplitQuery().ToListAsync();
                 return dorms;
             }
             catch (Exception ex)
@@ -38,11 +33,7 @@ namespace DMS_API.Repository
         {
             try
             {
-                var dorm = await _context.Dorms
-                     .Include(d => d.Floors)
-                        .ThenInclude(f => f.Houses)
-                            .ThenInclude(h => h.Rooms)
-                    .FirstOrDefaultAsync(d => d.Id == id);
+                var dorm = await _context.Dorms.SingleOrDefaultAsync(d => d.Id == id);
 
                 return dorm;
             }
@@ -52,5 +43,7 @@ namespace DMS_API.Repository
                 return null; // Or handle it in another way that makes sense for your application
             }
         }
+
+       
     }
 }

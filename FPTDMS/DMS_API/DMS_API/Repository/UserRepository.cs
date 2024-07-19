@@ -24,7 +24,9 @@ namespace DMS_API.Repository
 
         public async Task<IEnumerable<AppUser>> GetAllUsersAsync()
         {
-            return await _context.Users.ToListAsync();
+            return await _context.Users
+                .Include(u => u.Balance)
+                .ToListAsync();
         }
 
         public async Task<List<string>?> GetRoleAsync(AppUser user)
@@ -34,7 +36,9 @@ namespace DMS_API.Repository
 
         public async Task<AppUser?> GetUserByIdAsync(Guid userId)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            return await _context.Users
+                .Include(u => u.Balance)
+                .FirstOrDefaultAsync(u => u.Id == userId);
         }
 
         public async Task UpdateUserAsync(Guid id, UpdateUserRequestDTO updateRequest)

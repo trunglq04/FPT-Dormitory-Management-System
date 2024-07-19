@@ -14,12 +14,14 @@ namespace DMS_API.Controllers
         private readonly IVNPayService _vnPayService;
         private readonly IMapper _mapper;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IEmailService _emailService;
 
-        public PaymentsController(IVNPayService vnPayService, IMapper mapper, IUnitOfWork unitOfWork)
+        public PaymentsController(IVNPayService vnPayService, IMapper mapper, IUnitOfWork unitOfWork, IEmailService emailService)
         {
             _vnPayService = vnPayService;
             _mapper = mapper;
             _unitOfWork = unitOfWork;
+            _emailService = emailService;
         }
 
         // POST: api/payments/create
@@ -67,8 +69,37 @@ namespace DMS_API.Controllers
             order.Status = "Completed";
             await _unitOfWork.SaveChanges();
 
+            // Retrieve user information to send email
+            var user = await _unitOfWork.Users.GetUserByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound(new { message = "User not found." });
+            }
+
+            var emailSubject = "Payment Receipt";
+            var emailMessage = $@"
+            <html>
+            <body>
+                <div style='font-family: Arial, sans-serif; padding: 20px;'>
+                    <h2 style='color: #4CAF50;'>Payment Receipt</h2>
+                    <p>Dear {user.UserName},</p>
+                    <p>Your payment of <strong>{amount} VND</strong> has been successfully processed.</p>
+                    <h3>Order Details:</h3>
+                    <ul style='list-style-type: none; padding: 0;'>
+                        <li><strong>Order ID:</strong> {order.OrderReference}</li>
+                        <li><strong>Amount:</strong> {amount} VND</li>
+                        <li><strong>Status:</strong> Completed</li>
+                    </ul>
+                    <p>Thank you for your payment.</p>
+                    <p>Best regards,<br>FPT EDU</p>
+                </div>
+            </body>
+            </html>";
+
+            // Send email
+            await _emailService.SendEmailAsync(toEmail: user.Email, emailSubject, emailMessage);
+
             return Ok(paymentResponse);
         }
-
     }
 }

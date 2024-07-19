@@ -21,7 +21,9 @@ namespace DMS_API.Repository
         public async Task<List<Room>> GetAllAsync()
         {
             var rooms = await _context.Rooms
-                .Include(r => r.House)  // Include the House
+                .Include(r => r.House)
+                .ThenInclude(h => h.Floor)
+                .ThenInclude(f => f.Dorm)
                 .ToListAsync();
 
             return rooms;
@@ -30,7 +32,10 @@ namespace DMS_API.Repository
         public async Task<Room?> GetByIdAsync(Guid id)
         {
             var room = await _context.Rooms
-                .Include(r => r.House)  // Include the House
+                .Include(r => r.House)
+                 .ThenInclude(h => h.Floor)
+                .ThenInclude(f => f.Dorm)
+                .AsSplitQuery()
                 .FirstOrDefaultAsync(r => r.Id == id);
 
             return room;
@@ -41,7 +46,12 @@ namespace DMS_API.Repository
             if (roomToUpdate == null)
                 throw new Exception("Room not found");
 
-            _mapper.Map(room, roomToUpdate);
+            roomToUpdate.Capacity = room.Capacity;
+
+            _context.Rooms.Attach(roomToUpdate);
+            _context.Entry(roomToUpdate).State = EntityState.Modified;
+           
+
             await _context.SaveChangesAsync();
         }
     }

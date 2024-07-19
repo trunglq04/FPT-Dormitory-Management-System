@@ -49,17 +49,17 @@ namespace DMS_API.Controllers
                 return NotFound();
 
             var userDTOs = _mapper.Map<AppUserDTO>(user);
-            return Ok(user);
+            return Ok(userDTOs);
         }
 
+        
+
         [HttpPost("{id}")]
-        [Authorize("api")]
         public async Task<ActionResult> UpdateUserAsync(Guid id, UpdateUserRequestDTO updateUser)
         {
             await _unitOfWork.Users.UpdateUserAsync(id, updateUser);
             return Ok("Succesfully Update User!");
         }
-
         //POST CompleteProfile
         [HttpPost("{id}/CompleteProfile")]
         public async Task<ActionResult> AddOrUpdateProfileInfoAsync(Guid id, AddProfileInfoRequestDTO profileInfo)

@@ -14,9 +14,25 @@ namespace DMS_API.Repository
             _context = context;
         }
 
-        public async Task<Order> GetByOrderReferenceAsync(string orderReference)
+        public async Task<Order?> GetByOrderReferenceAsync(string orderReference)
         {
-            return await _context.Order.FirstOrDefaultAsync(o => o.OrderReference == orderReference);
+            var order =  await _context.Order.FirstOrDefaultAsync(o => o.OrderReference == orderReference);
+            return order;
+        }
+
+        public async Task<IEnumerable<Order>> GetByUserIdAsync(Guid userId)
+        {
+            var orders = await _context.Order.Where(o => o.UserId == userId)
+                .Include(o => o.User)
+                .ToListAsync();
+            return orders;
+        }
+        public async Task<IEnumerable<Order>> GetAllOrdersAsync() // Implement this method
+        {
+            var orders = await _context.Order
+                .Include(o => o.User)
+                .ToListAsync();
+            return orders;
         }
     }
 
