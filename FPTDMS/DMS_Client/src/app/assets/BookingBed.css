@@ -1,0 +1,10 @@
+.sidebar-col {
+    padding: 0;
+  }
+  
+  .content-col {
+    padding: 20px;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  
