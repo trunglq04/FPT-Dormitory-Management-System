@@ -13,33 +13,28 @@ using DMS_API.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
         throw new InvalidOperationException("Connection string 'ApplicationDbContextConnection' not found.");
-
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
        options.UseSqlServer(connectionString));
 
-
 builder.Services.AddControllers();
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
 
 builder.Services.AddIdentity<AppUser, AppRole>(options =>
 {
     // No confirmation email required after register for the next login
-    options.SignIn.RequireConfirmedAccount = false; 
+    options.SignIn.RequireConfirmedAccount = false;
     // Enables user lockout, to prevent brute - force attacks against user passwords
     options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
     options.Lockout.MaxFailedAccessAttempts = 5;
-    options.Lockout.AllowedForNewUsers = true; 
+    options.Lockout.AllowedForNewUsers = true;
     // Password settings
     options.Password.RequiredLength = 8;
-    options.Password.RequireNonAlphanumeric = true;
     options.Password.RequireDigit = false;
+    options.User.RequireUniqueEmail = true;
 })
     .AddRoles<AppRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -47,13 +42,10 @@ builder.Services.AddIdentity<AppUser, AppRole>(options =>
     .AddApiEndpoints();
 // support for login, register, logout, etc.
 
-
-
-builder.Services.AddAuthentication()
-  .AddBearerToken(IdentityConstants.BearerScheme);
+//builder.Services.AddAuthentication()
+//  .AddBearerToken(IdentityConstants.BearerScheme);
 
 #region Authentication
-
 
 builder.Services.AddAuthentication(options =>
 {
@@ -77,15 +69,6 @@ builder.Services.AddAuthentication(options =>
         };
     });
 
-//builder.Services.AddAuthorizationBuilder()
-//    .AddPolicy("api", policy =>
-//    {
-//        policy.RequireAuthenticatedUser();
-//        policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
-//    });
-
-
-
 builder.Services.AddCors(opt =>
 {
     opt.AddPolicy("CorsPolicy", policy =>
@@ -94,7 +77,7 @@ builder.Services.AddCors(opt =>
             .AllowAnyMethod()
             .AllowAnyHeader()
             .AllowCredentials()
-            .WithOrigins("http://localhost:3344");
+            .WithOrigins("http://localhost:3003");
     });
 });
 
@@ -131,9 +114,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-else 
-{ 
-   app.UseExceptionHandler("/Error");
+else
+{
+    app.UseExceptionHandler("/Error");
 };
 
 app.UseDefaultFiles();
@@ -147,12 +130,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.UseCors("CorsPolicy");
-
-app.MapGet("api/foo", () =>
-{
-    return new[] { "One", "Two", "Three" };
-})
-    .RequireAuthorization("api");
-
 
 app.Run();

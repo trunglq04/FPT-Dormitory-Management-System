@@ -7,7 +7,6 @@ import Footer from './Footer';
 import FAQSection from './FAQSection ';
 function HomePageContext() {
   
-
     return (
       <div>
           <>
