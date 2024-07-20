@@ -91,9 +91,11 @@ namespace DMS_API.Controllers
                         fullName = user.FirstName + " " + user.LastName;
                     }
 
-                    var authClaims = new List<Claim>();
-                    authClaims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
-                    authClaims.Add(new Claim(ClaimTypes.Name, fullName ?? user.UserName!));
+                    var authClaims = new List<Claim>
+                    {
+                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                        new Claim(ClaimTypes.Name, fullName ?? user.UserName!),
+                    };
                     foreach (var userRole in userRoles)
                     {
                         authClaims.Add(new Claim(ClaimTypes.Role, userRole));
@@ -104,7 +106,7 @@ namespace DMS_API.Controllers
                     var token = new JwtSecurityToken(
                         issuer: _configuration["JWT:ValidIssuer"],
                         audience: _configuration["JWT:ValidAudience"],
-                        expires: DateTime.Now.AddMinutes(20),
+                        expires: DateTime.Now.AddMinutes(45),
                         claims: authClaims,
                         signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
                     );

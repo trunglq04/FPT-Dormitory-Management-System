@@ -29,8 +29,8 @@ namespace DMS_API.Data
                     FirstName = "Admin",
                     LastName = "Admin",
                     Gender = "Male",
-                    Email = "admin@fpt.vn",
-                    NormalizedEmail = "ADMIN@FPT.VN",
+                    Email = "admin@fpt.edu.vn",
+                    NormalizedEmail = "ADMIN@FPT.EDU.VN",
                     PasswordHash = hasher.HashPassword(null, "@Admin123"),
                     LockoutEnabled = false
                 },
@@ -42,8 +42,8 @@ namespace DMS_API.Data
                     FirstName = "User",
                     LastName = "Normal",
                     Gender = "Female",
-                    Email = "client@fpt.vn",
-                    NormalizedEmail = "CLIENT@FPT.VN",
+                    Email = "client@fpt.edu.vn",
+                    NormalizedEmail = "CLIENT@FPT.EDU.VN",
                     PasswordHash = hasher.HashPassword(null, "@Client123"),
                 }
             );
