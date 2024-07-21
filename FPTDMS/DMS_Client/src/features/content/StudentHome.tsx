@@ -18,18 +18,18 @@ import { useNavigate } from "react-router-dom";
 import News from "./News";
 
 interface Booking {
-  id: string
-  roomId: string
-  dormName: string
-  houseName: string
-  roomName: string
-  userName: string
-  roomType: string
-  bookingDate: string
-  startDate: string
-  endDate: string
-  totalPrice: number
-  status: string
+  id: string;
+  roomId: string;
+  dormName: string;
+  houseName: string;
+  roomName: string;
+  userName: string;
+  roomType: string;
+  bookingDate: string;
+  startDate: string;
+  endDate: string;
+  totalPrice: number;
+  status: string;
 }
 
 const StudentHome = () => {
@@ -37,7 +37,7 @@ const StudentHome = () => {
   const [booking, setBooking] = useState<Booking | null>(null);
   const [error, setError] = useState<string>("");
   const [showModal, setShowModal] = useState<boolean>(false);
-  const [paymentAmount, setPaymentAmount] = useState<string>(""); // Use string to handle input properly
+  const [paymentAmount, setPaymentAmount] = useState<string>("");
   const [description, setDescription] = useState<string>("");
 
   const navigate = useNavigate();
@@ -63,25 +63,26 @@ const StudentHome = () => {
     };
 
     fetchUser();
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
-    const fetchUser = async () => {
+    const fetchBooking = async () => {
       try {
         const userId = localStorage.getItem("user_id");
         if (!userId) throw new Error("User ID not found");
 
-        const response = await axios.get<Booking[]>(
+        const response = await axios.get<Booking>(
           `https://localhost:7777/api/Booking/${userId}`
         );
 
+        console.log(response.data); // Kiểm tra dữ liệu trả về từ API
         setBooking(response.data);
       } catch (error) {
         console.error(error);
       }
     };
 
-    fetchUser();
+    fetchBooking();
   }, []);
 
   const handleShowModal = () => setShowModal(true);
@@ -89,58 +90,60 @@ const StudentHome = () => {
 
   const handlePaymentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const amount = parseInt(paymentAmount, 10); // Convert to number
+    const amount = parseInt(paymentAmount, 10);
 
     if (isNaN(amount) || amount <= 0) {
-        setError("Invalid amount. Please enter a positive number.");
-        return;
+      setError("Invalid amount. Please enter a positive number.");
+      return;
     }
 
     try {
-        const userId = localStorage.getItem("user_id");
-        if (!userId) throw new Error("User ID not found");
+      const userId = localStorage.getItem("user_id");
+      if (!userId) throw new Error("User ID not found");
 
-        const response = await axios.post(
-            "https://localhost:7777/api/payments/create",
-            {
-                orderId: userId,
-                fullName: `${user?.firstName} ${user?.lastName}`,
-                description: description,
-                amount: amount,
-                createdDate: new Date().toISOString(),
-            }
-        );
-
-        const paymentUrl = response.data.url.result;
-        if (paymentUrl) {
-            // Open the payment URL in a new popup window
-            const width = 600;
-            const height = 700;
-            const left = (window.screen.width / 2) - (width / 2);
-            const top = (window.screen.height / 2) - (height / 2);
-            window.open(paymentUrl, '_blank', `toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=${width},height=${height},top=${top},left=${left}`);
-        } else {
-            setError("Failed to retrieve payment URL");
-            console.error("Invalid URL:", paymentUrl);
+      const response = await axios.post(
+        "https://localhost:7777/api/payments/create",
+        {
+          orderId: userId,
+          fullName: `${user?.firstName} ${user?.lastName}`,
+          description: description,
+          amount: amount,
+          createdDate: new Date().toISOString(),
         }
+      );
+
+      const paymentUrl = response.data.url.result;
+      if (paymentUrl) {
+        const width = 600;
+        const height = 700;
+        const left = (window.screen.width / 2) - (width / 2);
+        const top = (window.screen.height / 2) - (height / 2);
+        window.open(paymentUrl, '_blank', `toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=${width},height=${height},top=${top},left=${left}`);
+      } else {
+        setError("Failed to retrieve payment URL");
+        console.error("Invalid URL:", paymentUrl);
+      }
     } catch (error) {
-        setError("Failed to initiate payment");
-        console.error(error);
+      setError("Failed to initiate payment");
+      console.error(error);
     }
-};
+  };
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (/^\d*$/.test(value)) {
-      // Only allow digits
-      setPaymentAmount(value.replace(/^0+/, "")); // Remove leading zeros
+      setPaymentAmount(value.replace(/^0+/, ""));
     }
   };
 
   return (
     <Container id="StudentHome" className="d-flex flex-wrap gap-3">
-      {/* Modal Component */}
-      <Modal show={showModal} onHide={handleCloseModal}>
+      <Modal
+        show={showModal}
+        onHide={handleCloseModal}
+        style={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+        dialogClassName="modal-dialog-centered"
+      >
         <Modal.Header closeButton>
           <Modal.Title>Payment</Modal.Title>
         </Modal.Header>
@@ -170,7 +173,7 @@ const StudentHome = () => {
           </Form>
         </Modal.Body>
       </Modal>
-    <News/>
+      <News />
       <Row id="StudentHome-info" className="d-flex flex-wrap gap-3">
         <Col className="SHome-right flex-grow-1">
           {error && <p style={{ color: "red" }}>{error}</p>}
@@ -212,7 +215,7 @@ const StudentHome = () => {
                         {`${user.firstName} ${user.lastName} - ${user.gender}`}
                       </p>
                       <p>
-                        <span style = {{color: "var(--blue-color)", fontWeight: "bold"}} className="text-gray">
+                        <span style={{ color: "var(--blue-color)", fontWeight: "bold" }} className="text-gray">
                           Birthday:  
                         </span>
                         {new Date(user.dateOfBirth).toLocaleDateString()} 
@@ -240,7 +243,46 @@ const StudentHome = () => {
                   style={{ backgroundColor: "#034DA1", color: "white" }}
                   className="SHome-personal-info"
                 >
-                  Contact
+                  Room Details
+                </Card.Header>
+                <Card.Body>
+                  <div className="Shome-info-container">
+                    {booking ? (
+                      <div className="Shone-info">
+                        <a className="text-blue">
+                          <b>Dorm: </b>
+                          <span className="text-gray">{booking.dormName}</span>
+                        </a>
+                        <br />
+                        <a className="text-blue">
+                          <b>House Name:</b>
+                          <span className="text-gray">{booking.houseName}</span>
+                        </a>
+                        <br />
+                        <a className="text-blue">
+                          <b>Room Type:</b>
+                          <span className="text-gray">{booking.roomType}</span>
+                        </a>
+                        <br />
+                        <a className="text-blue">
+                          <b>Status: </b>
+                          <span className="text-gray">{booking.status}</span>
+                          <br />
+                        </a>
+                      </div>
+                    ) : (
+                      <p>No booking details available.</p>
+                    )}
+                  </div>
+                </Card.Body>
+              </Card>
+
+              <Card className="mb-3">
+                <Card.Header
+                  style={{ backgroundColor: "#034DA1", color: "white" }}
+                  className="SHome-personal-info"
+                >
+                  Contact Support
                 </Card.Header>
                 <Card.Body>
                   <div className="Shome-info-container">
@@ -250,65 +292,17 @@ const StudentHome = () => {
                         <span className="text-gray">(098) 8122 0 99</span>
                       </a>
                       <br />
+                      <br />
                       <a className="text-blue" href="tel:0949197315">
                         <b>Health station:</b>
                         <span className="text-gray">(094) 9197 3 15</span>
                       </a>
                       <br />
+                      <br />
                       <a className="text-blue" href="tel:0935103199">
-                        <b>Dormitory management:</b>
-                        <span className="text-gray">(093) 5103 1 99</span>
-                        <br />
-                        <i>(Office hours)</i>
-                      </a>
-                      <br />
-                      <a
-                        href="/cdn-cgi/l/email-protection#78100d0d161c4e381e080c561d1c0d560e16"
-                        className="text-blue"
-                      >
-                        <b>Email:</b>
-                        <span className="text-gray">
-                          <span
-                            className="__cf_email__"
-                            data-cfemail="8be3fefee5efbdcbedfbffa5eeeffea5fde5"
-                          >
-                            fptdms@fpt.edu.vn
-                          </span>
-                        </span>
-                      </a>
-                    </div>
-                  </div>
-                </Card.Body>
-              </Card>
-              <Card className="mb-3">
-                <Card.Header
-                  style={{ backgroundColor: "#034DA1", color: "white" }}
-                  className="SHome-personal-info"
-                >
-                  Room Details
-                </Card.Header>
-                <Card.Body>
-                  <div className="Shome-info-container">
-                    <div className="Shone-info">
-                    <a className="text-blue">
-                        <b>Dorm: </b>
-                        <span className="text-gray"> {booking?.dormName}</span>
-                      </a>
-                      <br />
-                      <a className="text-blue">
-                        <b>House Name:</b>
-                        <span className="text-gray"> {booking?.houseName}</span>
-                      </a>
-                      <br />
-                      <a className="text-blue">
-                        <b>Room Type:</b>
-                        <span className="text-gray"> {booking?.roomType}</span>
-                      </a>
-                      <br />
-                      <a className="text-blue">
-                        <b>Status: </b>
-                        <span className="text-gray"> {booking?.status}</span>
-                        <br />
+                        <b>FPTDMS Email</b>
+                        <span className="text-gray">fptdms@fpt.edu.vn</span>
+                 
                       </a>
                     </div>
                   </div>

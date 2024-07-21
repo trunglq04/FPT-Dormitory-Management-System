@@ -1,28 +1,43 @@
-// ServiceForm.js
-import { useState, useEffect } from "react";
+// ServiceForm.tsx
+import { useState, useEffect, FC, FormEvent } from "react";
 import { Box, Button, Modal, TextField, Typography } from "@mui/material";
 
-const ServiceForm = ({ open, handleClose, handleSave, initialData }) => {
-  const [serviceName, setServiceName] = useState("");
-  const [price, setPrice] = useState("");
-  const [description, setDescription] = useState("");
+interface ServiceFormProps {
+  open: boolean;
+  handleClose: () => void;
+  handleSave: (data: ServiceData) => Promise<void>;
+  initialData?: ServiceData;
+}
+
+interface ServiceData {
+  id?: number;
+  serviceName: string;
+  price: number;
+  description: string;
+}
+
+const ServiceForm: FC<ServiceFormProps> = ({ open, handleClose, handleSave, initialData }) => {
+  const [serviceName, setServiceName] = useState<string>("");
+  const [price, setPrice] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
 
   useEffect(() => {
     if (initialData) {
       setServiceName(initialData.serviceName || "");
-      setPrice(initialData.price || "");
+      setPrice(initialData.price ? initialData.price.toString() : "");
       setDescription(initialData.description || "");
     }
   }, [initialData]);
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const serviceData = {
+    const serviceData: ServiceData = {
       serviceName,
-      price,
+      price: parseFloat(price),
       description,
+      id: initialData?.id,
     };
-    handleSave(serviceData);
+    await handleSave(serviceData);
   };
 
   return (

@@ -1,3 +1,4 @@
+// ServiceManagement.tsx
 import { Box, Button, IconButton } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import axios from "axios";
@@ -7,10 +8,17 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import ServiceUsageChart from "./ServiceUsageChart";
 
+interface ServiceData {
+  id?: number;
+  serviceName: string;
+  price: number;
+  description: string;
+}
+
 const ServiceManagement: React.FC = () => {
-  const [services, setServices] = useState([]);
+  const [services, setServices] = useState<ServiceData[]>([]);
   const [openForm, setOpenForm] = useState(false);
-  const [currentService, setCurrentService] = useState(null);
+  const [currentService, setCurrentService] = useState<ServiceData | null>(null);
   const [openChart, setOpenChart] = useState(false);
 
   useEffect(() => {
@@ -31,13 +39,13 @@ const ServiceManagement: React.FC = () => {
     setOpenForm(true);
   };
 
-  const handleEdit = (service: React.SetStateAction<null>) => {
+  const handleEdit = (service: ServiceData) => {
     setCurrentService(service);
     setOpenForm(true);
   };
 
-  const handleSave = async (serviceData: any) => {
-    if (currentService) {
+  const handleSave = async (serviceData: ServiceData) => {
+    if (currentService && currentService.id) {
       // Update service
       await axios.put(
         `https://localhost:7777/api/Service/${currentService.id}`,
@@ -53,7 +61,7 @@ const ServiceManagement: React.FC = () => {
     setOpenForm(false);
   };
 
-  const handleDelete = async (id: any) => {
+  const handleDelete = async (id: number) => {
     await axios.delete(`https://localhost:7777/api/Service/${id}`);
     const response = await axios.get(`https://localhost:7777/api/Service`);
     setServices(response.data);
@@ -87,13 +95,13 @@ const ServiceManagement: React.FC = () => {
         <>
           <IconButton
             color="primary"
-            onClick={() => handleEdit(params.row)}
+            onClick={() => handleEdit(params.row as ServiceData)}
           >
             <EditIcon />
           </IconButton>
           <IconButton
             color="secondary"
-            onClick={() => handleDelete(params.row.id)}
+            onClick={() => handleDelete((params.row as ServiceData).id!)}
           >
             <DeleteIcon />
           </IconButton>
@@ -132,7 +140,7 @@ const ServiceManagement: React.FC = () => {
         open={openForm}
         handleClose={() => setOpenForm(false)}
         handleSave={handleSave}
-        initialData={currentService}
+        initialData={currentService ?? undefined}
       />
       <ServiceUsageChart open={openChart} handleClose={() => setOpenChart(false)} />
     </div>
