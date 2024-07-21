@@ -115,7 +115,7 @@ const DormSelection: React.FC = () => {
         roomType: selectedRoom.roomType,
       };
 
-      const response = await axios.post("https://localhost:7777/api/Booking", request);
+     await axios.post("https://localhost:7777/api/Booking", request);
       toast.success("Booking request submitted successfully!");
     } catch (error) {
       if (axios.isAxiosError(error)) {
