@@ -2,6 +2,7 @@
 using DMS_API.Models.Domain;
 using DMS_API.Models.DTO;
 using DMS_API.Repository.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -44,6 +45,7 @@ namespace DMS_API.Controllers
 
         // POST: api/Dorm
         [HttpPost("add-dorm")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddDorm([FromBody] DormDTO dormDTO)
         {
             var dorm = _mapper.Map<Dorm>(dormDTO);
@@ -53,6 +55,7 @@ namespace DMS_API.Controllers
         }
 
         [HttpPut("update-dorm/{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateDorm(Guid id, [FromBody] DormDTO dormDTO)
         {
             var dorm = await _unitOfWork.Dorms.GetByIdAsync(id);

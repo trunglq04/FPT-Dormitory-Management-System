@@ -3,6 +3,7 @@ using DMS_API.Models.Domain;
 using DMS_API.Models.DTO;
 using DMS_API.Models.DTO.Request;
 using DMS_API.Repository.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -44,6 +45,7 @@ namespace DMS_API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<AddHouseRequestDTO>> AddHouse(AddHouseRequestDTO addHouseRequest)
         {
             var house = _mapper.Map<House>(addHouseRequest);
@@ -56,6 +58,7 @@ namespace DMS_API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteHouse(Guid id)
         {
             var house = await _unitOfWork.Houses.GetByIdAsync(id);
@@ -71,6 +74,7 @@ namespace DMS_API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateHouse(Guid id, UpdateHouseRequestDTO updateRequest)
         {
             try

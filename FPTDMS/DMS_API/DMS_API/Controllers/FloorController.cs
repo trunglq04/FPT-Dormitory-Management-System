@@ -3,11 +3,8 @@ using DMS_API.Models.Domain;
 using DMS_API.Models.DTO;
 using DMS_API.Models.DTO.Request;
 using DMS_API.Repository.Interface;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DMS_API.Controllers
 {
@@ -47,6 +44,7 @@ namespace DMS_API.Controllers
         }
         //ADD new floor
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<AddFloorRequestDTO>> AddFloor(AddFloorRequestDTO addFloorRequest)
         {
             var floor = _mapper.Map<Floor>(addFloorRequest);
@@ -59,6 +57,7 @@ namespace DMS_API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateFloor(Guid id, UpdateFloorRequestDTO updateRequest)
         {
             try
@@ -80,6 +79,7 @@ namespace DMS_API.Controllers
 
         //Delete floor by id
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteFloor(Guid id)
         {
             var floor = await _unitOfWork.Floors.GetByIdAsync(id);

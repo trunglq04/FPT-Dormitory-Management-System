@@ -14,7 +14,7 @@ namespace DMS_API.Data
 
             // Seeding Roles
             modelBuilder.Entity<AppRole>().HasData(
-                new AppRole { Id = Guid.Parse("2c5e174e-3b0e-446f-86af-483d56fd7210"), Name = "Administrator", NormalizedName = "ADMINISTRATOR" },
+                new AppRole { Id = Guid.Parse("2c5e174e-3b0e-446f-86af-483d56fd7210"), Name = "Admin", NormalizedName = "ADMIN" },
                 new AppRole { Id = Guid.Parse("0da24f70-3cc9-44b1-a48e-aa9d93635514"), Name = "Client", NormalizedName = "CLIENT" }
             );
 

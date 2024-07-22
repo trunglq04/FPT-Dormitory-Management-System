@@ -46,11 +46,11 @@ namespace DMS_API.Controllers
                 ModelState.AddModelError("erros", "Invalid email format");
             // ADD: Check password strength
             var userName = model.Email.Split('@')[0];
-            
+
 
             var user = new AppUser()
-            { 
-                UserName = userName, 
+            {
+                UserName = userName,
                 Email = model.Email,
                 Balance = new Balance { Amount = 0 },
                 LockoutEnabled = true
@@ -74,43 +74,24 @@ namespace DMS_API.Controllers
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestDTO model)
-        {
+        {   
+            // Get User by Email
             var user = await _userManager.FindByEmailAsync(model.Email);
 
             if (user != null)
-            {
+            {   
+                // Check if Account has been locked
                 var lockoutEndDate = await _userManager.GetLockoutEndDateAsync(user);
                 bool isLockoutEnd = lockoutEndDate == null || lockoutEndDate < DateTimeOffset.Now;
-
+                
+                // Check if the password is right and no Lockout valid
                 if (await _userManager.CheckPasswordAsync(user, model.Password) && isLockoutEnd)
                 {
-                    var userRoles = await _userManager.GetRolesAsync(user);
-                    string? fullName = null;
-                    if (user.FirstName != null || user.LastName != null)
-                    {
-                        fullName = user.FirstName + " " + user.LastName;
-                    }
-
-                    var authClaims = new List<Claim>
-                    {
-                        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                        new Claim(ClaimTypes.Name, fullName ?? user.UserName!),
-                    };
-                    foreach (var userRole in userRoles)
-                    {
-                        authClaims.Add(new Claim(ClaimTypes.Role, userRole));
-                    }
-
-                    var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"] ?? string.Empty));
-
-                    var token = new JwtSecurityToken(
-                        issuer: _configuration["JWT:ValidIssuer"],
-                        audience: _configuration["JWT:ValidAudience"],
-                        expires: DateTime.Now.AddMinutes(45),
-                        claims: authClaims,
-                        signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
-                    );
-
+                    // Get account ROLE
+                    var roles = await _userManager.GetRolesAsync(user);
+                    // Generate JWT Token
+                    var token = await GenerateJwtToken(user);
+                    /// Generate RefreshToken
                     var refreshToken = new RefreshToken
                     {
                         Id = Guid.NewGuid(),
@@ -120,9 +101,10 @@ namespace DMS_API.Controllers
                         IsRevoked = false
                     };
 
-                    return Ok(new
+                    return Ok(new 
                     {
                         user_id = user.Id, // Include the user ID in the response
+                        role = roles[0],
                         access_token = new JwtSecurityTokenHandler().WriteToken(token),
                         expiration = token.ValidTo,
                         refresh_token = refreshToken.Token,
@@ -137,6 +119,35 @@ namespace DMS_API.Controllers
             return Unauthorized("Please check your Email or Password");
         }
 
+        private async Task<JwtSecurityToken> GenerateJwtToken(AppUser user)
+        {
+            // Get User Role
+            var userRoles = await _userManager.GetRolesAsync(user);
+
+            var claims = new List<Claim>
+            {
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+            };
+
+            foreach (var userRole in userRoles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, userRole));
+            }
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Secret"] ?? string.Empty));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:ValidIssuer"],
+                audience: _configuration["Jwt:ValidAudience"],
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(45),
+                signingCredentials: creds
+            );
+            return token;
+        }
 
         //Forgot password
         [HttpPost("forgot-password")]
@@ -158,7 +169,7 @@ namespace DMS_API.Controllers
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 
             // Send OTP via email
-            await _emailService.SendEmailAsync(model.Email, 
+            await _emailService.SendEmailAsync(model.Email,
                 "Reset Password OTP", $"Your OTP for password reset is {otp}.");
 
             return Ok("OTP has been sent to your email.");
@@ -214,29 +225,6 @@ namespace DMS_API.Controllers
             return Ok("Password has been reset successfully.");
         }
 
-        private string GenerateJwtToken(AppUser user)
-        {
-            var claims = new[]
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
-            };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Secret"] ?? string.Empty));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var token = new JwtSecurityToken(
-                issuer: _configuration["Jwt:Issuer"],
-                audience: _configuration["Jwt:Audience"],
-                claims: claims,
-                expires: DateTime.Now.AddDays(30),
-                signingCredentials: creds
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
         private async Task<IActionResult> addLockoutEnd(AppUser user)
         {
             var accessFailedCount = user.AccessFailedCount;
@@ -256,13 +244,12 @@ namespace DMS_API.Controllers
                 await _userManager.SetLockoutEndDateAsync(user, lockoutEnd);
                 return Unauthorized($"You attempts fail {accessFailedCount}, your account is locked 10 minutes");
             }
-            else 
+            else
             {
                 var lockoutEnd = DateTimeOffset.Now.AddMinutes(15);
                 await _userManager.SetLockoutEndDateAsync(user, lockoutEnd);
                 return Unauthorized($"You attempts fail {accessFailedCount}, your account is locked 15 minutes");
             }
         }
-
     }
 }

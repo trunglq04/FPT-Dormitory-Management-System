@@ -3,6 +3,7 @@ using DMS_API.Models.Domain;
 using DMS_API.Models.DTO;
 using DMS_API.Models.DTO.Request;
 using DMS_API.Repository.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -43,6 +44,7 @@ namespace DMS_API.Controllers
         }
         //PUT: api/Room/{id}
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateRoom(Guid id, UpdateRoomRequestDTO room)
         {
             try
@@ -57,6 +59,7 @@ namespace DMS_API.Controllers
         }
         //POST: api/Room
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<AddRoomRequestDTO>> AddRoom(AddRoomRequestDTO addRoomRequestDTO)
         {
             var room = _mapper.Map<Room>(addRoomRequestDTO);

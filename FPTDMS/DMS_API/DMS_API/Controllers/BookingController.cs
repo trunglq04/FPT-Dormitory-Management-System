@@ -10,6 +10,7 @@ using OfficeOpenXml;
 using static System.Net.WebRequestMethods;
 using DMS_API.Services;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DMS_API.Controllers
 {
@@ -96,6 +97,7 @@ namespace DMS_API.Controllers
         }
 
         [HttpPut("{id}/approve")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ApproveBooking(Guid id)
         {
             var booking = await _unitOfWork.Bookings.GetByIdAsync(id);
@@ -149,6 +151,7 @@ namespace DMS_API.Controllers
         }
 
         [HttpPut("{id}/cancel")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CancelBooking(Guid id)
         {
             var booking = await _unitOfWork.Bookings.GetByIdAsync(id);
